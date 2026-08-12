@@ -7,18 +7,41 @@ const THEMES = [
 ];
 
 const REFRESH_INTERVAL_MS = 60_000;
+const PAGE_SIZE = 12;
 
-const { SUPABASE_URL, SUPABASE_ANON_KEY } = window.SHOWSIMS_CONFIG;
+// Second Life Time is always US Pacific — it follows Pacific's own DST rules,
+// so a fixed IANA zone (rather than a fixed UTC offset) keeps this correct
+// year-round without any manual adjustment.
+const SLT_TIME_ZONE = "America/Los_Angeles";
+
+const { SUPABASE_URL, SUPABASE_ANON_KEY, HUD_MARKETPLACE_URL, DONATE_URL } = window.SHOWSIMS_CONFIG;
 
 const elGrid = document.getElementById("venue-grid");
 const elStatus = document.getElementById("status-message");
 const elCount = document.getElementById("venue-count");
 const elFilters = document.getElementById("theme-filters");
 const elRefreshBtn = document.getElementById("refresh-btn");
+const elSortSelect = document.getElementById("sort-select");
+const elSltClock = document.getElementById("slt-clock");
+const elHudBtn = document.getElementById("hud-btn");
+const elDonateBtn = document.getElementById("donate-btn");
+const elPagination = document.getElementById("pagination");
+const elPagePrev = document.getElementById("page-prev");
+const elPageNext = document.getElementById("page-next");
+const elPageIndicator = document.getElementById("page-indicator");
 const cardTemplate = document.getElementById("venue-card-template");
 
 let allVenues = [];
 let activeTheme = "all";
+let sortMode = "population_desc";
+let pageIndex = 0;
+
+const SORTERS = {
+  population_desc: (a, b) => b.population - a.population,
+  population_asc: (a, b) => a.population - b.population,
+  name_asc: (a, b) => a.name.localeCompare(b.name),
+  theme_asc: (a, b) => a.theme.localeCompare(b.theme) || a.name.localeCompare(b.name),
+};
 
 function buildThemeFilterChips() {
   for (const theme of THEMES) {
@@ -38,10 +61,53 @@ elFilters.addEventListener("click", (event) => {
   for (const chip of elFilters.querySelectorAll(".filter-chip")) {
     chip.classList.toggle("is-active", chip === btn);
   }
+  pageIndex = 0;
+  render();
+});
+
+elSortSelect.addEventListener("change", () => {
+  sortMode = elSortSelect.value;
+  pageIndex = 0;
+  render();
+});
+
+elPagePrev.addEventListener("click", () => {
+  pageIndex = Math.max(0, pageIndex - 1);
+  render();
+});
+
+elPageNext.addEventListener("click", () => {
+  pageIndex += 1;
   render();
 });
 
 elRefreshBtn.addEventListener("click", () => loadVenues());
+
+function setupExternalButton(el, url) {
+  if (url) {
+    el.href = url;
+    el.classList.remove("is-disabled");
+    el.removeAttribute("aria-disabled");
+  } else {
+    el.href = "#";
+    el.classList.add("is-disabled");
+    el.setAttribute("aria-disabled", "true");
+    el.title = "Coming soon";
+    el.addEventListener("click", (event) => event.preventDefault());
+  }
+}
+
+function updateSltClock() {
+  const now = new Date();
+  const time = new Intl.DateTimeFormat("en-US", {
+    timeZone: SLT_TIME_ZONE,
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: true,
+  }).format(now);
+  elSltClock.textContent = `SLT ${time}`;
+}
 
 async function loadVenues() {
   setStatus("");
@@ -64,17 +130,20 @@ async function loadVenues() {
 }
 
 function render() {
-  const venues = activeTheme === "all"
-    ? allVenues
+  const filtered = activeTheme === "all"
+    ? allVenues.slice()
     : allVenues.filter((v) => v.theme === activeTheme);
 
-  elCount.textContent = venues.length === 1
+  filtered.sort(SORTERS[sortMode]);
+
+  elCount.textContent = filtered.length === 1
     ? "1 venue open"
-    : `${venues.length} venues open`;
+    : `${filtered.length} venues open`;
 
   elGrid.innerHTML = "";
 
-  if (venues.length === 0) {
+  if (filtered.length === 0) {
+    elPagination.hidden = true;
     setStatus(
       allVenues.length === 0
         ? "No venues currently open — check back soon."
@@ -84,9 +153,19 @@ function render() {
   }
   setStatus("");
 
-  for (const venue of venues) {
+  const pageCount = Math.ceil(filtered.length / PAGE_SIZE);
+  pageIndex = Math.min(pageIndex, pageCount - 1);
+  const start = pageIndex * PAGE_SIZE;
+  const pageVenues = filtered.slice(start, start + PAGE_SIZE);
+
+  for (const venue of pageVenues) {
     elGrid.appendChild(renderCard(venue));
   }
+
+  elPagination.hidden = pageCount <= 1;
+  elPagePrev.disabled = pageIndex === 0;
+  elPageNext.disabled = pageIndex >= pageCount - 1;
+  elPageIndicator.textContent = `Page ${pageIndex + 1} of ${pageCount}`;
 }
 
 function renderCard(venue) {
@@ -128,5 +207,9 @@ function setStatus(message) {
 }
 
 buildThemeFilterChips();
+setupExternalButton(elHudBtn, HUD_MARKETPLACE_URL);
+setupExternalButton(elDonateBtn, DONATE_URL);
+updateSltClock();
+setInterval(updateSltClock, 1000);
 loadVenues();
 setInterval(loadVenues, REFRESH_INTERVAL_MS);

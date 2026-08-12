@@ -40,7 +40,15 @@ body {
 
 .header-inner {
   display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.header-top,
+.header-bottom {
+  display: flex;
   align-items: baseline;
+  justify-content: space-between;
   gap: 16px;
   flex-wrap: wrap;
 }
@@ -57,10 +65,53 @@ body {
 
 .brand-mark { width: 28px; height: 28px; }
 
+.slt-clock {
+  font-variant-numeric: tabular-nums;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 4px 12px;
+}
+
 .tagline {
   margin: 0;
   color: var(--text-muted);
   font-size: 0.95rem;
+}
+
+.header-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.header-btn {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 7px 14px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text);
+  text-decoration: none;
+  background: var(--bg-elevated);
+}
+
+.header-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+.header-btn-accent {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #0f1115;
+}
+
+.header-btn-accent:hover { color: #0f1115; opacity: 0.9; }
+
+.header-btn.is-disabled {
+  opacity: 0.5;
+  cursor: default;
+  pointer-events: none;
 }
 
 .toolbar {
@@ -117,6 +168,51 @@ body {
 }
 
 .refresh-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+.sort-label {
+  font-size: 0.85rem;
+}
+
+.sort-select {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 8px;
+  padding: 6px 10px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 8px 0 40px;
+}
+
+.page-btn {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.page-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+
+.page-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.page-indicator {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
 
 .status-message {
   color: var(--text-muted);

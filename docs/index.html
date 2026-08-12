@@ -10,11 +10,20 @@
 <body>
   <header class="site-header">
     <div class="wrap header-inner">
-      <a class="brand" href="./">
-        <img src="assets/logo.svg" alt="" class="brand-mark">
-        <span>ShowSims</span>
-      </a>
-      <p class="tagline">Live, currently-open Second Life venues</p>
+      <div class="header-top">
+        <a class="brand" href="./">
+          <img src="assets/logo.svg" alt="" class="brand-mark">
+          <span>ShowSims</span>
+        </a>
+        <span class="slt-clock" id="slt-clock" title="Second Life Time (Pacific)"></span>
+      </div>
+      <div class="header-bottom">
+        <p class="tagline">Live, currently-open Second Life venues</p>
+        <div class="header-actions">
+          <a id="hud-btn" class="header-btn" target="_blank" rel="noopener">Get the HUD</a>
+          <a id="donate-btn" class="header-btn header-btn-accent" target="_blank" rel="noopener">Donate</a>
+        </div>
+      </div>
     </div>
   </header>
 
@@ -26,6 +35,13 @@
              lsl/shared_reference/themes.md -->
       </div>
       <div class="toolbar-meta">
+        <label class="sort-label" for="sort-select">Sort</label>
+        <select id="sort-select" class="sort-select">
+          <option value="population_desc">Population (high–low)</option>
+          <option value="population_asc">Population (low–high)</option>
+          <option value="name_asc">Name (A–Z)</option>
+          <option value="theme_asc">Theme (A–Z)</option>
+        </select>
         <span id="venue-count">Loading…</span>
         <button id="refresh-btn" class="refresh-btn" type="button" title="Refresh now">⟳</button>
       </div>
@@ -34,6 +50,12 @@
     <p id="status-message" class="status-message" hidden></p>
 
     <section id="venue-grid" class="venue-grid" aria-live="polite"></section>
+
+    <nav class="pagination" id="pagination" aria-label="Pagination" hidden>
+      <button id="page-prev" class="page-btn" type="button">← Prev</button>
+      <span id="page-indicator" class="page-indicator"></span>
+      <button id="page-next" class="page-btn" type="button">Next →</button>
+    </nav>
   </main>
 
   <footer class="site-footer">
