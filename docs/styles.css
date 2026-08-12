@@ -1,21 +1,27 @@
+/* Palette sampled from the Ray's Den store branding
+   (Store Images/rays_den_store_banner.png, StoreFront.png) — deep purple/near-black
+   base, magenta-purple accent, pink-white gradient for the wordmark. */
 :root {
-  --bg: #0f1115;
-  --bg-elevated: #171a21;
-  --border: #2a2e38;
-  --text: #eef0f4;
-  --text-muted: #9aa2b1;
-  --accent: #6c8cff;
-  --good: #35d488;
+  --bg: #150a1f;
+  --bg-elevated: #241432;
+  --bg-elevated-2: #2e1a40;
+  --border: #4a2a5e;
+  --text: #f5edf8;
+  --text-muted: #b79cc9;
+  --accent: #a855c9;
+  --accent-pink: #e6a8e0;
+  --on-accent: #1a0d24;
+  --good: #3ddc97;
 
   --theme-bdsm: #d64545;
-  --theme-club: #a855f7;
-  --theme-venue: #6c8cff;
+  --theme-club: #d946c9;
+  --theme-venue: #7c6cf0;
   --theme-hangout: #35d488;
   --theme-dating: #f472b6;
   --theme-roleplay: #f59e0b;
   --theme-livemusic: #22c1c3;
   --theme-shopping: #eab308;
-  --theme-other: #9aa2b1;
+  --theme-other: #a996b8;
 }
 
 * { box-sizing: border-box; }
@@ -34,11 +40,24 @@ body {
 }
 
 .site-header {
+  position: relative;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 6% 25%, rgba(245,237,248,0.4) 0 2px, transparent 3px),
+    radial-gradient(circle at 20% 75%, rgba(230,168,224,0.35) 0 1.5px, transparent 2.5px),
+    radial-gradient(circle at 38% 15%, rgba(245,237,248,0.3) 0 1.5px, transparent 2.5px),
+    radial-gradient(circle at 63% 80%, rgba(230,168,224,0.35) 0 2px, transparent 3px),
+    radial-gradient(circle at 82% 20%, rgba(245,237,248,0.35) 0 1.5px, transparent 2.5px),
+    radial-gradient(circle at 94% 60%, rgba(230,168,224,0.3) 0 1.5px, transparent 2.5px),
+    radial-gradient(ellipse 760px 280px at 50% -55%, rgba(168,85,201,0.45), transparent 70%),
+    var(--bg);
   border-bottom: 1px solid var(--border);
   padding: 28px 0 24px;
 }
 
 .header-inner {
+  position: relative;
+  z-index: 1;
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -57,13 +76,20 @@ body {
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--text);
+  font-size: 1.6rem;
+  font-weight: 800;
   text-decoration: none;
+  filter: drop-shadow(0 0 14px rgba(168,85,201,0.45));
 }
 
-.brand-mark { width: 28px; height: 28px; }
+.brand span {
+  background: linear-gradient(135deg, #fdfcfd, var(--accent-pink) 55%, var(--accent));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.brand-mark { width: 30px; height: 30px; }
 
 .slt-clock {
   font-variant-numeric: tabular-nums;
@@ -72,6 +98,7 @@ body {
   border: 1px solid var(--border);
   border-radius: 999px;
   padding: 4px 12px;
+  background: rgba(36, 20, 50, 0.6);
 }
 
 .tagline {
@@ -89,8 +116,8 @@ body {
   display: inline-flex;
   align-items: center;
   border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 7px 14px;
+  border-radius: 999px;
+  padding: 7px 16px;
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--text);
@@ -98,15 +125,16 @@ body {
   background: var(--bg-elevated);
 }
 
-.header-btn:hover { border-color: var(--accent); color: var(--accent); }
+.header-btn:hover { border-color: var(--accent); color: var(--accent-pink); }
 
 .header-btn-accent {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: #0f1115;
+  background: linear-gradient(135deg, var(--accent-pink), var(--accent));
+  border-color: transparent;
+  color: var(--on-accent);
+  box-shadow: 0 0 16px rgba(168,85,201,0.4);
 }
 
-.header-btn-accent:hover { color: #0f1115; opacity: 0.9; }
+.header-btn-accent:hover { color: var(--on-accent); opacity: 0.9; }
 
 .header-btn.is-disabled {
   opacity: 0.5;
@@ -142,9 +170,9 @@ body {
 .filter-chip:hover { color: var(--text); }
 
 .filter-chip.is-active {
-  background: var(--accent);
-  border-color: var(--accent);
-  color: #0f1115;
+  background: linear-gradient(135deg, var(--accent-pink), var(--accent));
+  border-color: transparent;
+  color: var(--on-accent);
   font-weight: 600;
 }
 
@@ -167,7 +195,7 @@ body {
   cursor: pointer;
 }
 
-.refresh-btn:hover { border-color: var(--accent); color: var(--accent); }
+.refresh-btn:hover { border-color: var(--accent); color: var(--accent-pink); }
 
 .sort-label {
   font-size: 0.85rem;
@@ -202,7 +230,7 @@ body {
   cursor: pointer;
 }
 
-.page-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+.page-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent-pink); }
 
 .page-btn:disabled {
   opacity: 0.4;
@@ -230,18 +258,19 @@ body {
 .venue-card {
   background: var(--bg-elevated);
   border: 1px solid var(--border);
-  border-radius: 12px;
+  border-radius: 14px;
   overflow: hidden;
   display: flex;
   flex-direction: column;
   gap: 12px;
   text-decoration: none;
-  transition: border-color 0.15s ease, transform 0.15s ease;
+  transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .venue-card:hover {
   border-color: var(--accent);
   transform: translateY(-2px);
+  box-shadow: 0 10px 28px rgba(168, 85, 201, 0.25);
 }
 
 .venue-photo-wrap {
@@ -290,7 +319,7 @@ body {
   letter-spacing: 0.02em;
   padding: 4px 9px;
   border-radius: 999px;
-  color: #0f1115;
+  color: var(--on-accent);
   background: var(--theme-other);
 }
 
@@ -331,7 +360,7 @@ body {
 
 .teleport-link {
   align-self: flex-start;
-  color: var(--accent);
+  color: var(--accent-pink);
   text-decoration: none;
   font-size: 0.85rem;
   font-weight: 600;
@@ -345,4 +374,17 @@ body {
   padding: 20px 0 40px;
   color: var(--text-muted);
   font-size: 0.85rem;
+}
+
+.footer-credit {
+  margin: 6px 0 0;
+  font-size: 0.8rem;
+}
+
+.footer-credit .brand-name {
+  background: linear-gradient(135deg, var(--accent-pink), var(--accent));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-weight: 700;
 }
