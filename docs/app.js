@@ -101,11 +101,11 @@ function renderCard(venue) {
   const photo = node.querySelector(".venue-photo");
   photoWrap.dataset.theme = venue.theme;
   if (venue.photo_texture_uuid) {
-    // Linden Lab's public texture proxy — converts an SL asset (J2C) to a
-    // browser-renderable image by UUID. Not every texture resolves (private/
-    // adult-flagged/deleted assets can 404), so fail gracefully rather than
-    // showing a broken-image icon.
-    photo.src = `https://secondlife.com/app/image/${venue.photo_texture_uuid}/large`;
+    // Second Life's (unofficial, undocumented-by-Linden) Picture Service —
+    // converts an SL texture asset to a JPEG thumbnail by UUID. Only fixed
+    // sizes exist (max 320x240); not every texture resolves (deleted/invalid
+    // assets 404), so fail gracefully rather than showing a broken-image icon.
+    photo.src = `https://picture-service.secondlife.com/${venue.photo_texture_uuid}/320x240.jpg`;
     photo.hidden = false;
     photo.addEventListener("error", () => {
       photo.hidden = true;

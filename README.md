@@ -49,6 +49,9 @@ with your project's values, then:
 
 - Rez `owner_publish_object.lsl` (in an object) on the parcel you want to list. Touch it
   as the parcel/object owner to publish; touching it as anyone else shows read-only status.
+  Optionally drop a full-permission texture named exactly `Venue Photo` into the object's
+  inventory (an in-world Snapshot to Inventory works, most marketplace textures won't —
+  see `lsl/shared_reference/themes.md`) to show a cover photo on the site.
 - Attach `browser_hud.lsl` (in a HUD object) and touch it to browse/filter/teleport.
 
 `lsl/shared_reference/themes.md` is the single source of truth for the theme list and
