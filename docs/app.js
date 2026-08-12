@@ -97,6 +97,22 @@ function renderCard(venue) {
   badge.textContent = venue.theme;
   badge.dataset.theme = venue.theme;
 
+  const photoWrap = node.querySelector(".venue-photo-wrap");
+  const photo = node.querySelector(".venue-photo");
+  photoWrap.dataset.theme = venue.theme;
+  if (venue.photo_texture_uuid) {
+    // Linden Lab's public texture proxy — converts an SL asset (J2C) to a
+    // browser-renderable image by UUID. Not every texture resolves (private/
+    // adult-flagged/deleted assets can 404), so fail gracefully rather than
+    // showing a broken-image icon.
+    photo.src = `https://secondlife.com/app/image/${venue.photo_texture_uuid}/large`;
+    photo.hidden = false;
+    photo.addEventListener("error", () => {
+      photo.hidden = true;
+      photo.removeAttribute("src");
+    });
+  }
+
   node.querySelector(".population-count").textContent = venue.population;
   node.querySelector(".region-name").textContent = venue.region_name;
 

@@ -135,7 +135,7 @@ body {
   background: var(--bg-elevated);
   border: 1px solid var(--border);
   border-radius: 12px;
-  padding: 16px;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   gap: 12px;
@@ -148,11 +148,35 @@ body {
   transform: translateY(-2px);
 }
 
+.venue-photo-wrap {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  background: linear-gradient(135deg, var(--theme-other), var(--bg-elevated));
+}
+
+.venue-photo-wrap[data-theme="BDSM"] { background: linear-gradient(135deg, var(--theme-bdsm), var(--bg-elevated)); }
+.venue-photo-wrap[data-theme="Club"] { background: linear-gradient(135deg, var(--theme-club), var(--bg-elevated)); }
+.venue-photo-wrap[data-theme="Venue"] { background: linear-gradient(135deg, var(--theme-venue), var(--bg-elevated)); }
+.venue-photo-wrap[data-theme="Hangout"] { background: linear-gradient(135deg, var(--theme-hangout), var(--bg-elevated)); }
+.venue-photo-wrap[data-theme="Dating"] { background: linear-gradient(135deg, var(--theme-dating), var(--bg-elevated)); }
+.venue-photo-wrap[data-theme="Roleplay"] { background: linear-gradient(135deg, var(--theme-roleplay), var(--bg-elevated)); }
+.venue-photo-wrap[data-theme="Live Music"] { background: linear-gradient(135deg, var(--theme-livemusic), var(--bg-elevated)); }
+.venue-photo-wrap[data-theme="Shopping"] { background: linear-gradient(135deg, var(--theme-shopping), var(--bg-elevated)); }
+
+.venue-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .venue-card-top {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   gap: 8px;
+  padding: 0 16px;
 }
 
 .venue-name {
@@ -190,6 +214,7 @@ body {
   align-items: center;
   font-size: 0.85rem;
   color: var(--text-muted);
+  padding: 0 16px;
 }
 
 .population {
@@ -214,6 +239,7 @@ body {
   text-decoration: none;
   font-size: 0.85rem;
   font-weight: 600;
+  padding: 0 16px 16px;
 }
 
 .teleport-link:hover { text-decoration: underline; }
