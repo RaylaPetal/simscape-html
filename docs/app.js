@@ -31,10 +31,23 @@ const elPageNext = document.getElementById("page-next");
 const elPageIndicator = document.getElementById("page-indicator");
 const cardTemplate = document.getElementById("venue-card-template");
 
+const elReportDialog = document.getElementById("report-dialog");
+const elReportForm = document.getElementById("report-form");
+const elReportVenueName = document.getElementById("report-venue-name");
+const elReportReason = document.getElementById("report-reason");
+const elReportDetails = document.getElementById("report-details");
+const elReportReporterName = document.getElementById("report-reporter-name");
+const elReportError = document.getElementById("report-error");
+const elReportSuccess = document.getElementById("report-success");
+const elReportCancelBtn = document.getElementById("report-cancel-btn");
+const elReportFields = document.getElementById("report-fields");
+const elReportActions = document.getElementById("report-actions");
+
 let allVenues = [];
 let activeTheme = "all";
 let sortMode = "population_desc";
 let pageIndex = 0;
+let reportingVenue = null;
 
 const SORTERS = {
   population_desc: (a, b) => b.population - a.population,
@@ -198,8 +211,58 @@ function renderCard(venue) {
   const link = node.querySelector(".teleport-link");
   link.href = venue.slurl;
 
+  node.querySelector(".report-link").addEventListener("click", () => openReportDialog(venue));
+
   return node;
 }
+
+function openReportDialog(venue) {
+  reportingVenue = venue;
+  elReportVenueName.textContent = `"${venue.name}"`;
+  elReportForm.reset();
+  elReportError.hidden = true;
+  elReportSuccess.hidden = true;
+  elReportFields.hidden = false;
+  elReportActions.hidden = false;
+  elReportDialog.showModal();
+}
+
+elReportCancelBtn.addEventListener("click", () => elReportDialog.close());
+
+elReportForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  elReportError.hidden = true;
+
+  const payload = {
+    venue_id: reportingVenue.id,
+    venue_name: reportingVenue.name,
+    reason: elReportReason.value,
+    details: elReportDetails.value.trim() || null,
+    reporter_name: elReportReporterName.value.trim() || null,
+  };
+
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/reports`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+        Prefer: "return=minimal",
+      },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) throw new Error(`Request failed: ${res.status}`);
+    elReportFields.hidden = true;
+    elReportActions.hidden = true;
+    elReportSuccess.hidden = false;
+    setTimeout(() => elReportDialog.close(), 1600);
+  } catch (err) {
+    console.error("Failed to submit report", err);
+    elReportError.textContent = "Couldn't send that report — please try again.";
+    elReportError.hidden = false;
+  }
+});
 
 function setStatus(message) {
   elStatus.textContent = message;

@@ -211,7 +211,11 @@ body {
   cursor: pointer;
 }
 
-.pagination {
+/* :not([hidden]) — an author rule setting `display` beats the browser's
+   default [hidden] { display: none } rule regardless of selector specificity
+   (origin precedence is checked before specificity), so this must be scoped
+   or the hidden attribute toggling in app.js/admin.js silently does nothing. */
+.pagination:not([hidden]) {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -358,16 +362,32 @@ body {
   display: inline-block;
 }
 
+.venue-card-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 16px 16px;
+}
+
 .teleport-link {
-  align-self: flex-start;
   color: var(--accent-pink);
   text-decoration: none;
   font-size: 0.85rem;
   font-weight: 600;
-  padding: 0 16px 16px;
 }
 
 .teleport-link:hover { text-decoration: underline; }
+
+.report-link {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.78rem;
+  cursor: pointer;
+  padding: 0;
+}
+
+.report-link:hover { color: var(--theme-bdsm); text-decoration: underline; }
 
 .site-footer {
   border-top: 1px solid var(--border);
@@ -387,4 +407,115 @@ body {
   background-clip: text;
   color: transparent;
   font-weight: 700;
+}
+
+/* ---- Shared form/button primitives (used by the report dialog here and by
+   admin.css on the admin board) ---------------------------------------- */
+
+.admin-hint {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  margin: 4px 0 12px;
+}
+
+.admin-optional {
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.admin-error {
+  color: var(--theme-bdsm);
+  font-size: 0.85rem;
+  margin-top: 8px;
+}
+
+.admin-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.admin-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.admin-form input,
+.admin-form select,
+.admin-form textarea {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 10px;
+  color: var(--text);
+  font-size: 0.9rem;
+  font-family: inherit;
+  resize: vertical;
+}
+
+.btn {
+  border-radius: 999px;
+  padding: 9px 18px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  background: var(--bg-elevated-2);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.btn:hover { border-color: var(--accent); color: var(--accent-pink); }
+
+.btn-accent {
+  background: linear-gradient(135deg, var(--accent-pink), var(--accent));
+  color: var(--on-accent);
+  border-color: transparent;
+}
+
+.btn-accent:hover { color: var(--on-accent); opacity: 0.9; }
+
+.btn-small {
+  padding: 5px 12px;
+  font-size: 0.78rem;
+  margin: 2px 4px 2px 0;
+}
+
+/* ---- Report dialog ----------------------------------------------------- */
+
+.report-dialog {
+  background: var(--bg-elevated);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px;
+  max-width: 420px;
+  width: calc(100% - 40px);
+}
+
+.report-dialog::backdrop {
+  background: rgba(10, 4, 16, 0.7);
+}
+
+.report-dialog h2 {
+  margin: 0 0 4px;
+  font-size: 1.1rem;
+}
+
+/* :not([hidden]) on both — app.js toggles #report-fields/#report-actions via
+   the hidden attribute after a successful submit; an unscoped display rule
+   here would silently defeat that (see the .pagination comment above for why). */
+#report-fields:not([hidden]) {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.report-dialog-actions:not([hidden]) {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 4px;
 }

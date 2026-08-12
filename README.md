@@ -28,7 +28,8 @@ for the original requirements and `.claude/plans/` (if present) for the full des
    supabase db push                     # applies supabase/migrations/*.sql
    supabase functions deploy publish
    supabase functions deploy heartbeat
-   supabase functions deploy delist     # optional
+   supabase functions deploy delist         # optional
+   supabase functions deploy admin-add-admin
    ```
    `supabase/config.toml` already sets `verify_jwt = false` for these three functions,
    since LSL objects aren't OAuth clients — each function validates its own input instead.
@@ -56,6 +57,31 @@ with your project's values, then:
 
 `lsl/shared_reference/themes.md` is the single source of truth for the theme list and
 duration options — if you change them, update it and everywhere it points to.
+
+### 4. Admin board (`docs/admin.html`)
+
+Force-delist, ban/unban SL avatars, review reports, and add more admins — gated by
+Supabase Auth + the `admins` table (see `supabase/migrations/0006_admin_system.sql`).
+Nobody is an admin by default, including you — the first one has to be bootstrapped
+by hand:
+
+1. Supabase Dashboard → **Authentication → Users → Add User** — create your own account
+   (email + password). There's no public sign-up page; this is the only time you'll use
+   the dashboard for this.
+2. Grab your new user's UUID from that same Users list, then run (SQL editor, or
+   `supabase db query --linked`):
+   ```sql
+   insert into public.admins (user_id, email) values ('<your-user-uuid>', '<your-email>');
+   ```
+3. Sign in at `docs/admin.html`. From here on, adding more admins is self-service — the
+   **Add Admin** panel emails an invite (they set their own password) and writes to
+   `admins` for you, via the `admin-add-admin` function. See the comments at the top of
+   `supabase/functions/admin-add-admin/index.ts` for why that step can't be done with a
+   direct table write even for existing admins.
+
+Nothing links to `admin.html` from the public site on purpose — it's not indexed
+(`<meta name="robots" content="noindex, nofollow">`) and isn't advertised, though RLS
+(not obscurity) is what actually protects the data behind it.
 
 ## Verification order
 

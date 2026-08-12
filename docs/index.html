@@ -82,9 +82,41 @@
         </span>
         <span class="region-name"></span>
       </div>
-      <a class="teleport-link" target="_blank" rel="noopener">Open SLURL ↗</a>
+      <div class="venue-card-actions">
+        <a class="teleport-link" target="_blank" rel="noopener">Open SLURL ↗</a>
+        <button class="report-link" type="button">Report</button>
+      </div>
     </article>
   </template>
+
+  <dialog id="report-dialog" class="report-dialog">
+    <form id="report-form" method="dialog" class="admin-form">
+      <h2>Report <span id="report-venue-name"></span></h2>
+      <div id="report-fields">
+        <label>Reason
+          <select id="report-reason" required>
+            <option value="Misleading theme/info">Misleading theme/info</option>
+            <option value="Inactive/Not actually open">Inactive/Not actually open</option>
+            <option value="Inappropriate content">Inappropriate content</option>
+            <option value="Spam/Fake listing">Spam/Fake listing</option>
+            <option value="Other">Other</option>
+          </select>
+        </label>
+        <label>Details <span class="admin-optional">(optional)</span>
+          <textarea id="report-details" maxlength="500" rows="3"></textarea>
+        </label>
+        <label>Your name <span class="admin-optional">(optional)</span>
+          <input type="text" id="report-reporter-name" maxlength="64">
+        </label>
+      </div>
+      <p id="report-error" class="admin-error" hidden></p>
+      <p id="report-success" class="admin-hint" hidden>Thanks — this report has been sent to the admins.</p>
+      <div id="report-actions" class="report-dialog-actions">
+        <button type="button" id="report-cancel-btn" class="btn">Cancel</button>
+        <button type="submit" id="report-submit-btn" class="btn btn-accent">Submit Report</button>
+      </div>
+    </form>
+  </dialog>
 
   <script src="config.js"></script>
   <script src="app.js"></script>

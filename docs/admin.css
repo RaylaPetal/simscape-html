@@ -1,0 +1,124 @@
+/* Admin board styling — layered on top of styles.css, reusing the same
+   Ray's Den palette variables and shared form/button primitives defined there
+   (.admin-form, .admin-hint, .admin-error, .btn, etc.) */
+
+/* :not([hidden]) for the same reason as #dashboard below — any author rule
+   setting `display` beats the browser's default [hidden] rule regardless of
+   selector specificity, since origin precedence is checked before specificity. */
+.session-info:not([hidden]) {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
+
+.admin-main {
+  padding: 32px 20px 64px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+#login-section {
+  align-self: center;
+  width: 100%;
+  max-width: 420px;
+  margin-top: 48px;
+}
+
+/* :not([hidden]) matters here — an ID selector alone would outrank the
+   browser's default `[hidden] { display: none }` rule and defeat the
+   show/hide toggling that admin.js does via the hidden attribute. */
+#dashboard:not([hidden]) {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.admin-hint {
+  margin-top: 20px;
+}
+
+.admin-card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 20px 24px;
+  max-width: 480px;
+}
+
+.admin-card:has(.admin-table-wrap) {
+  max-width: none;
+}
+
+.admin-card h2 {
+  margin: 0 0 12px;
+  font-size: 1.1rem;
+}
+
+.admin-form-row {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-end;
+}
+
+.admin-form-row label { flex: 1 1 160px; }
+
+.admin-table-wrap {
+  overflow-x: auto;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+}
+
+.admin-table th {
+  text-align: left;
+  color: var(--text-muted);
+  font-weight: 600;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.admin-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+  vertical-align: top;
+}
+
+.status-active { color: var(--good); font-weight: 600; }
+.status-expired { color: var(--text-muted); }
+
+.admin-pagination {
+  padding: 12px 0 4px;
+}
+
+#report-dialog {
+  max-width: 480px;
+}
+
+.report-detail-list {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 8px 12px;
+  margin: 0 0 12px;
+  font-size: 0.9rem;
+}
+
+.report-detail-list dt {
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.report-detail-list dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+#report-dialog .report-dialog-actions {
+  flex-wrap: wrap;
+}
