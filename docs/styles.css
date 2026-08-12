@@ -1,0 +1,226 @@
+:root {
+  --bg: #0f1115;
+  --bg-elevated: #171a21;
+  --border: #2a2e38;
+  --text: #eef0f4;
+  --text-muted: #9aa2b1;
+  --accent: #6c8cff;
+  --good: #35d488;
+
+  --theme-bdsm: #d64545;
+  --theme-club: #a855f7;
+  --theme-venue: #6c8cff;
+  --theme-hangout: #35d488;
+  --theme-dating: #f472b6;
+  --theme-roleplay: #f59e0b;
+  --theme-livemusic: #22c1c3;
+  --theme-shopping: #eab308;
+  --theme-other: #9aa2b1;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.wrap {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.site-header {
+  border-bottom: 1px solid var(--border);
+  padding: 28px 0 24px;
+}
+
+.header-inner {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text);
+  text-decoration: none;
+}
+
+.brand-mark { width: 28px; height: 28px; }
+
+.tagline {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin: 28px 0 20px;
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.filter-chip {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.filter-chip:hover { color: var(--text); }
+
+.filter-chip.is-active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #0f1115;
+  font-weight: 600;
+}
+
+.toolbar-meta {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+}
+
+.refresh-btn {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 8px;
+  width: 32px;
+  height: 32px;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.refresh-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+.status-message {
+  color: var(--text-muted);
+  padding: 40px 0;
+  text-align: center;
+}
+
+.venue-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+  padding-bottom: 48px;
+}
+
+.venue-card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  text-decoration: none;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+}
+
+.venue-card:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+}
+
+.venue-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.venue-name {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.theme-badge {
+  flex-shrink: 0;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  padding: 4px 9px;
+  border-radius: 999px;
+  color: #0f1115;
+  background: var(--theme-other);
+}
+
+.theme-badge[data-theme="BDSM"] { background: var(--theme-bdsm); color: #fff; }
+.theme-badge[data-theme="Club"] { background: var(--theme-club); color: #fff; }
+.theme-badge[data-theme="Venue"] { background: var(--theme-venue); color: #fff; }
+.theme-badge[data-theme="Hangout"] { background: var(--theme-hangout); }
+.theme-badge[data-theme="Dating"] { background: var(--theme-dating); }
+.theme-badge[data-theme="Roleplay"] { background: var(--theme-roleplay); }
+.theme-badge[data-theme="Live Music"] { background: var(--theme-livemusic); }
+.theme-badge[data-theme="Shopping"] { background: var(--theme-shopping); }
+.theme-badge[data-theme="Other"] { background: var(--theme-other); }
+
+.venue-card-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.population {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text);
+  font-weight: 600;
+}
+
+.population-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--good);
+  display: inline-block;
+}
+
+.teleport-link {
+  align-self: flex-start;
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.teleport-link:hover { text-decoration: underline; }
+
+.site-footer {
+  border-top: 1px solid var(--border);
+  padding: 20px 0 40px;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}

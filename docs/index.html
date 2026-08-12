@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ShowSims — Live Second Life Venues</title>
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="brand" href="./">
+        <img src="assets/logo.svg" alt="" class="brand-mark">
+        <span>ShowSims</span>
+      </a>
+      <p class="tagline">Live, currently-open Second Life venues</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="toolbar">
+      <div class="filters" id="theme-filters" role="group" aria-label="Filter by theme">
+        <button class="filter-chip is-active" data-theme="all" type="button">All</button>
+        <!-- theme chips are injected by app.js from THEMES, kept in sync with
+             lsl/shared_reference/themes.md -->
+      </div>
+      <div class="toolbar-meta">
+        <span id="venue-count">Loading…</span>
+        <button id="refresh-btn" class="refresh-btn" type="button" title="Refresh now">⟳</button>
+      </div>
+    </div>
+
+    <p id="status-message" class="status-message" hidden></p>
+
+    <section id="venue-grid" class="venue-grid" aria-live="polite"></section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <p>Venues are listed for a limited time by their owners (6–24 hours) and disappear
+        automatically when that time runs out.</p>
+    </div>
+  </footer>
+
+  <template id="venue-card-template">
+    <article class="venue-card">
+      <div class="venue-card-top">
+        <h2 class="venue-name"></h2>
+        <span class="theme-badge"></span>
+      </div>
+      <div class="venue-card-bottom">
+        <span class="population" title="Current population">
+          <span class="population-dot" aria-hidden="true"></span>
+          <span class="population-count"></span>
+        </span>
+        <span class="region-name"></span>
+      </div>
+      <a class="teleport-link" target="_blank" rel="noopener">Open SLURL ↗</a>
+    </article>
+  </template>
+
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
