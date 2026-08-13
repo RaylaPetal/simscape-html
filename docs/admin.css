@@ -87,7 +87,10 @@
 .admin-table td {
   padding: 8px 10px;
   border-bottom: 1px solid var(--border);
-  vertical-align: top;
+  /* middle, not top: action buttons carry their own padding/border that a
+     top-aligned cell would leave sitting visibly lower than plain-text
+     cells in the same row. */
+  vertical-align: middle;
 }
 
 .status-active { color: var(--good); font-weight: 600; }
