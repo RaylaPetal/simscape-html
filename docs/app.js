@@ -15,7 +15,11 @@ const MATURITIES = ["General", "Moderate", "Adult"];
 // tier. The refresh button's cooldown (startRefreshCooldown() below) follows this
 // same constant automatically, so both stay in sync with a single change here.
 const REFRESH_INTERVAL_MS = 300_000;
-const PAGE_SIZE = 12;
+// Starting guess only — recomputePageSize() replaces this with however many
+// cards actually fit the viewport (columns x rows) after the first real paint,
+// so a page never leaves a big empty gap above the pagination bar just because
+// a fixed count happened to fall short of a full screen.
+let PAGE_SIZE = 12;
 
 // Second Life Time is always US Pacific — it follows Pacific's own DST rules,
 // so a fixed IANA zone (rather than a fixed UTC offset) keeps this correct
@@ -223,7 +227,36 @@ function getFilteredVenues() {
   return filtered;
 }
 
-function render() {
+// Measures the just-rendered grid (real column count from the CSS grid, real
+// card height including whatever content it ended up with) and works out how
+// many cards actually fit the visible viewport without scrolling. Returns true
+// if that's different from the current guess, so the caller knows to re-render.
+function recomputePageSize() {
+  const firstCard = elGrid.querySelector(".venue-card");
+  if (!firstCard) return false;
+
+  const gridStyle = getComputedStyle(elGrid);
+  const columns = gridStyle.gridTemplateColumns.split(" ").length;
+  const rowGap = parseFloat(gridStyle.rowGap) || 0;
+  const cardHeight = firstCard.getBoundingClientRect().height;
+  if (columns < 1 || cardHeight <= 0) return false;
+
+  const gridTop = elGrid.getBoundingClientRect().top;
+  // Rough reserve for the pagination bar, which can't be measured directly
+  // while hidden (display:none collapses it to zero height regardless of
+  // content) — matches its actual CSS (button height + 8px/40px padding).
+  const reserveForPagination = 90;
+  const availableHeight = window.innerHeight - gridTop - reserveForPagination;
+
+  const rows = Math.max(1, Math.floor((availableHeight + rowGap) / (cardHeight + rowGap)));
+  const newPageSize = columns * rows;
+
+  if (newPageSize === PAGE_SIZE) return false;
+  PAGE_SIZE = newPageSize;
+  return true;
+}
+
+function render(skipRecompute) {
   const filtered = getFilteredVenues();
 
   elCount.textContent = filtered.length === 1
@@ -254,6 +287,16 @@ function render() {
 
   for (const venue of pageVenues) {
     elGrid.appendChild(renderCard(venue));
+  }
+
+  // Now that real cards are painted, check whether PAGE_SIZE's current guess
+  // actually matches how many fit the screen — if not, re-render once with the
+  // corrected count. skipRecompute guards against this ever looping more than
+  // one extra pass (card height/column count are stable once measured, so a
+  // second render always confirms the same size).
+  if (!skipRecompute && recomputePageSize()) {
+    render(true);
+    return;
   }
 
   elPagination.hidden = pageCount <= 1;
@@ -429,6 +472,18 @@ function setStatus(message) {
   elStatus.textContent = message;
   elStatus.hidden = !message;
 }
+
+// Column count and rows-that-fit both change on resize (window resize, or the
+// sidebar's responsive breakpoint at 860px) — re-measure and re-render,
+// debounced so continuous drag-resizing doesn't thrash render() on every pixel.
+let resizeDebounceTimer;
+window.addEventListener("resize", () => {
+  clearTimeout(resizeDebounceTimer);
+  resizeDebounceTimer = setTimeout(() => {
+    pageIndex = 0;
+    render();
+  }, 150);
+});
 
 buildFilterGroups();
 setupExternalButton(elHudBtn, HUD_MARKETPLACE_URL);
