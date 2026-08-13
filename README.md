@@ -1,4 +1,4 @@
-# ShowSims
+# Simscape
 
 Second Life venue-listing platform: a showbuzz.org-style website listing currently open
 venues (name, population, theme), fed by two in-world LSL objects. See `Project Plan.MD`

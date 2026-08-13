@@ -1,4 +1,4 @@
-// ShowSims static site. Reads the public_venues view via PostgREST using the
+// Simscape static site. Reads the public_venues view via PostgREST using the
 // anon key (see docs/config.js). No build step, no framework.
 
 const THEMES = [
@@ -14,7 +14,7 @@ const PAGE_SIZE = 12;
 // year-round without any manual adjustment.
 const SLT_TIME_ZONE = "America/Los_Angeles";
 
-const { SUPABASE_URL, SUPABASE_ANON_KEY, HUD_MARKETPLACE_URL, DONATE_URL } = window.SHOWSIMS_CONFIG;
+const { SUPABASE_URL, SUPABASE_ANON_KEY, HUD_MARKETPLACE_URL, DONATE_URL } = window.SIMSCAPE_CONFIG;
 
 const elGrid = document.getElementById("venue-grid");
 const elStatus = document.getElementById("status-message");

@@ -1,4 +1,4 @@
-// ShowSims Admin board. Uses the real Supabase JS client (unlike the public
+// Simscape Admin board. Uses the real Supabase JS client (unlike the public
 // site's plain fetch()) because it needs proper auth session handling.
 // Access is gated entirely by RLS (see supabase/migrations/0006_admin_system.sql)
 // — being logged in isn't enough on its own, the signed-in user must have a row
@@ -7,7 +7,7 @@
 
 const PAGE_SIZE = 10;
 
-const { SUPABASE_URL, SUPABASE_ANON_KEY } = window.SHOWSIMS_CONFIG;
+const { SUPABASE_URL, SUPABASE_ANON_KEY } = window.SIMSCAPE_CONFIG;
 const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const elLoginSection = document.getElementById("login-section");
