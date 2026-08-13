@@ -9,11 +9,4 @@ window.SIMSCAPE_CONFIG = {
   // Marketplace listing for the Browser HUD. Leave "" until it's actually
   // published — the button shows a disabled "Coming Soon" state when empty.
   HUD_MARKETPLACE_URL: "",
-
-  // Donate link — placeholder. Could end up being a PayPal.me link, a
-  // secondlife:///app/agent/<uuid>/pay link (only works from browsers running
-  // *inside* the SL viewer, not a normal desktop browser — see
-  // https://wiki.secondlife.com/wiki/Viewer_URI_Name_Space), or something else
-  // entirely. Leave "" until decided — the button shows "Coming Soon" when empty.
-  DONATE_URL: "",
 };

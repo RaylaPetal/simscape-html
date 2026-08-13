@@ -14,7 +14,7 @@ const PAGE_SIZE = 12;
 // year-round without any manual adjustment.
 const SLT_TIME_ZONE = "America/Los_Angeles";
 
-const { SUPABASE_URL, SUPABASE_ANON_KEY, HUD_MARKETPLACE_URL, DONATE_URL } = window.SIMSCAPE_CONFIG;
+const { SUPABASE_URL, SUPABASE_ANON_KEY, HUD_MARKETPLACE_URL } = window.SIMSCAPE_CONFIG;
 
 const elGrid = document.getElementById("venue-grid");
 const elStatus = document.getElementById("status-message");
@@ -24,7 +24,6 @@ const elRefreshBtn = document.getElementById("refresh-btn");
 const elSortSelect = document.getElementById("sort-select");
 const elSltClock = document.getElementById("slt-clock");
 const elHudBtn = document.getElementById("hud-btn");
-const elDonateBtn = document.getElementById("donate-btn");
 const elPagination = document.getElementById("pagination");
 const elPagePrev = document.getElementById("page-prev");
 const elPageNext = document.getElementById("page-next");
@@ -280,7 +279,6 @@ function setStatus(message) {
 
 buildThemeFilterChips();
 setupExternalButton(elHudBtn, HUD_MARKETPLACE_URL);
-setupExternalButton(elDonateBtn, DONATE_URL);
 updateSltClock();
 setInterval(updateSltClock, 1000);
 loadVenues();
