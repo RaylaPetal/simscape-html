@@ -15,13 +15,14 @@
 
   --theme-bdsm: #d64545;
   --theme-club: #d946c9;
-  --theme-venue: #7c6cf0;
   --theme-hangout: #35d488;
   --theme-dating: #f472b6;
   --theme-roleplay: #f59e0b;
-  --theme-livemusic: #22c1c3;
-  --theme-shopping: #eab308;
-  --theme-other: #a996b8;
+  --theme-dj: #6366f1;
+  --theme-games: #84cc16;
+  --theme-adult: #991b1b;
+  --theme-fetish: #581c87;
+  --theme-fallback: #a996b8;
 }
 
 * { box-sizing: border-box; }
@@ -280,17 +281,18 @@ body {
 .venue-photo-wrap {
   position: relative;
   aspect-ratio: 16 / 9;
-  background: linear-gradient(135deg, var(--theme-other), var(--bg-elevated));
+  background: linear-gradient(135deg, var(--theme-fallback), var(--bg-elevated));
 }
 
 .venue-photo-wrap[data-theme="BDSM"] { background: linear-gradient(135deg, var(--theme-bdsm), var(--bg-elevated)); }
 .venue-photo-wrap[data-theme="Club"] { background: linear-gradient(135deg, var(--theme-club), var(--bg-elevated)); }
-.venue-photo-wrap[data-theme="Venue"] { background: linear-gradient(135deg, var(--theme-venue), var(--bg-elevated)); }
 .venue-photo-wrap[data-theme="Hangout"] { background: linear-gradient(135deg, var(--theme-hangout), var(--bg-elevated)); }
 .venue-photo-wrap[data-theme="Dating"] { background: linear-gradient(135deg, var(--theme-dating), var(--bg-elevated)); }
 .venue-photo-wrap[data-theme="Roleplay"] { background: linear-gradient(135deg, var(--theme-roleplay), var(--bg-elevated)); }
-.venue-photo-wrap[data-theme="Live Music"] { background: linear-gradient(135deg, var(--theme-livemusic), var(--bg-elevated)); }
-.venue-photo-wrap[data-theme="Shopping"] { background: linear-gradient(135deg, var(--theme-shopping), var(--bg-elevated)); }
+.venue-photo-wrap[data-theme="DJ"] { background: linear-gradient(135deg, var(--theme-dj), var(--bg-elevated)); }
+.venue-photo-wrap[data-theme="Games"] { background: linear-gradient(135deg, var(--theme-games), var(--bg-elevated)); }
+.venue-photo-wrap[data-theme="Adult"] { background: linear-gradient(135deg, var(--theme-adult), var(--bg-elevated)); }
+.venue-photo-wrap[data-theme="Fetish"] { background: linear-gradient(135deg, var(--theme-fetish), var(--bg-elevated)); }
 
 .venue-photo {
   position: absolute;
@@ -315,8 +317,15 @@ body {
   line-height: 1.3;
 }
 
-.theme-badge {
+.theme-badges {
   flex-shrink: 0;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+.theme-badge {
   font-size: 0.72rem;
   font-weight: 700;
   text-transform: uppercase;
@@ -324,18 +333,18 @@ body {
   padding: 4px 9px;
   border-radius: 999px;
   color: var(--on-accent);
-  background: var(--theme-other);
+  background: var(--theme-fallback);
 }
 
 .theme-badge[data-theme="BDSM"] { background: var(--theme-bdsm); color: #fff; }
 .theme-badge[data-theme="Club"] { background: var(--theme-club); color: #fff; }
-.theme-badge[data-theme="Venue"] { background: var(--theme-venue); color: #fff; }
 .theme-badge[data-theme="Hangout"] { background: var(--theme-hangout); }
 .theme-badge[data-theme="Dating"] { background: var(--theme-dating); }
 .theme-badge[data-theme="Roleplay"] { background: var(--theme-roleplay); }
-.theme-badge[data-theme="Live Music"] { background: var(--theme-livemusic); }
-.theme-badge[data-theme="Shopping"] { background: var(--theme-shopping); }
-.theme-badge[data-theme="Other"] { background: var(--theme-other); }
+.theme-badge[data-theme="DJ"] { background: var(--theme-dj); color: #fff; }
+.theme-badge[data-theme="Games"] { background: var(--theme-games); }
+.theme-badge[data-theme="Adult"] { background: var(--theme-adult); color: #fff; }
+.theme-badge[data-theme="Fetish"] { background: var(--theme-fetish); color: #fff; }
 
 .venue-card-bottom {
   display: flex;
