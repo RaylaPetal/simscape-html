@@ -95,6 +95,3 @@ seeded data, (4) the Owner Publish Object in-world, (5) the Browser HUD against 
 Permanent listings / subscription tier, an owner web dashboard, venue thumbnail images,
 stale-heartbeat safety delisting, and abuse throttling on `publish` — see `Project Plan.MD`
 ("Never permanent yet, that will be added later as a subscription").
-
-
-Supabase PW: FhHbCazn3nbh5EY5
