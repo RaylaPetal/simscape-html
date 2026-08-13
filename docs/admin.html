@@ -10,178 +10,187 @@
   <link rel="stylesheet" href="admin.css">
 </head>
 <body>
-  <header class="site-header">
-    <div class="wrap header-inner">
-      <div class="header-top">
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="sidebar-scroll">
         <a class="brand" href="./">
           <img src="assets/logo.svg" alt="" class="brand-mark">
           <span>Simscape Admin</span>
         </a>
-        <div id="session-info" class="session-info" hidden>
-          <span id="session-email"></span>
-          <a class="header-btn header-btn-accent" target="_blank" rel="noopener"
-             href="https://my.secondlife.com/raypetal#about_tab">Donate L$</a>
-          <button id="sign-out-btn" class="header-btn" type="button">Sign Out</button>
-        </div>
+
+        <nav id="sidebar-nav" class="sidebar-nav" hidden>
+          <a href="#venues-section" class="sidebar-nav-link">Sims</a>
+          <a href="#reports-section" class="sidebar-nav-link">Reports</a>
+          <a href="#bans-section" class="sidebar-nav-link">Bans</a>
+          <a href="#subscriptions-section" class="sidebar-nav-link">Subscriptions</a>
+          <a href="#add-admin-section" class="sidebar-nav-link">Add Admin</a>
+        </nav>
       </div>
-    </div>
-  </header>
 
-  <main class="wrap admin-main">
+      <div id="session-info" class="sidebar-footer" hidden>
+        <span id="session-email" class="session-email"></span>
+        <a class="sidebar-link sidebar-link-accent" target="_blank" rel="noopener"
+           href="https://my.secondlife.com/raypetal#about_tab">Donate L$</a>
+        <button id="sign-out-btn" class="sidebar-link" type="button">Sign Out</button>
+      </div>
+    </aside>
 
-    <section id="login-section" class="admin-card">
-      <h2>Sign in</h2>
-      <form id="login-form" class="admin-form">
-        <label>Email
-          <input type="email" id="login-email" required autocomplete="username">
-        </label>
-        <label>Password
-          <input type="password" id="login-password" required autocomplete="current-password">
-        </label>
-        <button type="submit" class="btn btn-accent">Sign In</button>
-        <p id="login-error" class="admin-error" hidden></p>
-      </form>
-      <p class="admin-hint">No public sign-up — accounts are created by an existing admin
-        via the Add Admin panel, or bootstrapped directly in Supabase for the first one.</p>
-    </section>
+    <main class="main-content admin-main">
 
-    <section id="set-password-section" class="admin-card" hidden>
-      <h2>Set your password</h2>
-      <p class="admin-hint">You're signed in via an invite link — choose a password
-        to use for future sign-ins.</p>
-      <form id="set-password-form" class="admin-form">
-        <label>New password
-          <input type="password" id="set-password-input" required minlength="6" autocomplete="new-password">
-        </label>
-        <label>Confirm password
-          <input type="password" id="set-password-confirm" required minlength="6" autocomplete="new-password">
-        </label>
-        <button type="submit" class="btn btn-accent">Set Password</button>
-        <p id="set-password-error" class="admin-error" hidden></p>
-      </form>
-    </section>
-
-    <div id="dashboard" hidden>
-
-      <section class="admin-card">
-        <h2>Sims</h2>
-        <p class="admin-hint">All sims, active and expired. Force Delist immediately
-          removes a listing from the public site regardless of its remaining time.</p>
-        <div class="admin-table-wrap">
-          <table class="admin-table" id="venues-table">
-            <thead>
-              <tr>
-                <th>Name</th><th>Themes</th><th>Pop.</th><th>Owner</th>
-                <th>Status</th><th>Expires</th><th></th>
-              </tr>
-            </thead>
-            <tbody id="venues-tbody"></tbody>
-          </table>
-        </div>
-        <nav class="pagination admin-pagination" id="venues-pagination" hidden>
-          <button class="page-btn" id="venues-page-prev" type="button">← Prev</button>
-          <span class="page-indicator" id="venues-page-indicator"></span>
-          <button class="page-btn" id="venues-page-next" type="button">Next →</button>
-        </nav>
-      </section>
-
-      <section class="admin-card">
-        <h2>Reports</h2>
-        <p class="admin-hint">Click View to read the full report and act on it.</p>
-        <div class="admin-table-wrap">
-          <table class="admin-table" id="reports-table">
-            <thead>
-              <tr>
-                <th>Sim</th><th>Reason</th><th>Reported by</th>
-                <th>When</th><th>Status</th><th></th>
-              </tr>
-            </thead>
-            <tbody id="reports-tbody"></tbody>
-          </table>
-        </div>
-        <nav class="pagination admin-pagination" id="reports-pagination" hidden>
-          <button class="page-btn" id="reports-page-prev" type="button">← Prev</button>
-          <span class="page-indicator" id="reports-page-indicator"></span>
-          <button class="page-btn" id="reports-page-next" type="button">Next →</button>
-        </nav>
-      </section>
-
-      <section class="admin-card">
-        <h2>Bans</h2>
-        <form id="ban-form" class="admin-form admin-form-row">
-          <label>Owner key (SL avatar UUID)
-            <input type="text" id="ban-owner-key" required placeholder="00000000-0000-0000-0000-000000000000">
-          </label>
-          <label>Owner name <span class="admin-optional">(optional)</span>
-            <input type="text" id="ban-owner-name">
-          </label>
-          <label>Reason
-            <input type="text" id="ban-reason" required maxlength="200">
-          </label>
-          <label>Duration
-            <select id="ban-duration">
-              <option value="permanent">Permanent</option>
-              <option value="1">1 day</option>
-              <option value="7">7 days</option>
-              <option value="30">30 days</option>
-            </select>
-          </label>
-          <button type="submit" class="btn btn-accent">Ban</button>
-        </form>
-        <p id="ban-error" class="admin-error" hidden></p>
-        <div class="admin-table-wrap">
-          <table class="admin-table" id="bans-table">
-            <thead>
-              <tr>
-                <th>Owner</th><th>Reason</th><th>Until</th><th>Banned</th><th></th>
-              </tr>
-            </thead>
-            <tbody id="bans-tbody"></tbody>
-          </table>
-        </div>
-        <nav class="pagination admin-pagination" id="bans-pagination" hidden>
-          <button class="page-btn" id="bans-page-prev" type="button">← Prev</button>
-          <span class="page-indicator" id="bans-page-indicator"></span>
-          <button class="page-btn" id="bans-page-next" type="button">Next →</button>
-        </nav>
-      </section>
-
-      <section class="admin-card">
-        <h2>Subscriptions</h2>
-        <p class="admin-hint">Paid tier purchases (owner pays their Publish Object
-          directly in-world) — audit trail only, nothing to action here.
-          <span id="subscriptions-revenue"></span></p>
-        <div class="admin-table-wrap">
-          <table class="admin-table" id="subscriptions-table">
-            <thead>
-              <tr>
-                <th>Sim</th><th>Owner</th><th>Tier</th><th>L$</th><th>Purchased</th><th>New expiry</th>
-              </tr>
-            </thead>
-            <tbody id="subscriptions-tbody"></tbody>
-          </table>
-        </div>
-        <nav class="pagination admin-pagination" id="subscriptions-pagination" hidden>
-          <button class="page-btn" id="subscriptions-page-prev" type="button">← Prev</button>
-          <span class="page-indicator" id="subscriptions-page-indicator"></span>
-          <button class="page-btn" id="subscriptions-page-next" type="button">Next →</button>
-        </nav>
-      </section>
-
-      <section class="admin-card">
-        <h2>Add Admin</h2>
-        <p class="admin-hint">Sends an email invite — the new admin sets their own password.</p>
-        <form id="add-admin-form" class="admin-form admin-form-row">
+      <section id="login-section" class="admin-card">
+        <h2>Sign in</h2>
+        <form id="login-form" class="admin-form">
           <label>Email
-            <input type="email" id="add-admin-email" required>
+            <input type="email" id="login-email" required autocomplete="username">
           </label>
-          <button type="submit" class="btn btn-accent">Send Invite</button>
+          <label>Password
+            <input type="password" id="login-password" required autocomplete="current-password">
+          </label>
+          <button type="submit" class="btn btn-accent">Sign In</button>
+          <p id="login-error" class="admin-error" hidden></p>
         </form>
-        <p id="add-admin-message" class="admin-hint" hidden></p>
+        <p class="admin-hint">No public sign-up — accounts are created by an existing admin
+          via the Add Admin panel, or bootstrapped directly in Supabase for the first one.</p>
       </section>
 
-    </div>
-  </main>
+      <section id="set-password-section" class="admin-card" hidden>
+        <h2>Set your password</h2>
+        <p class="admin-hint">You're signed in via an invite link — choose a password
+          to use for future sign-ins.</p>
+        <form id="set-password-form" class="admin-form">
+          <label>New password
+            <input type="password" id="set-password-input" required minlength="6" autocomplete="new-password">
+          </label>
+          <label>Confirm password
+            <input type="password" id="set-password-confirm" required minlength="6" autocomplete="new-password">
+          </label>
+          <button type="submit" class="btn btn-accent">Set Password</button>
+          <p id="set-password-error" class="admin-error" hidden></p>
+        </form>
+      </section>
+
+      <div id="dashboard" hidden>
+
+        <section id="venues-section" class="admin-card">
+          <h2>Sims</h2>
+          <p class="admin-hint">All sims, active and expired. Force Delist immediately
+            removes a listing from the public site regardless of its remaining time.</p>
+          <div class="admin-table-wrap">
+            <table class="admin-table" id="venues-table">
+              <thead>
+                <tr>
+                  <th>Name</th><th>Themes</th><th>Pop.</th><th>Owner</th>
+                  <th>Status</th><th>Expires</th><th></th>
+                </tr>
+              </thead>
+              <tbody id="venues-tbody"></tbody>
+            </table>
+          </div>
+          <nav class="pagination admin-pagination" id="venues-pagination" hidden>
+            <button class="page-btn" id="venues-page-prev" type="button">← Prev</button>
+            <span class="page-indicator" id="venues-page-indicator"></span>
+            <button class="page-btn" id="venues-page-next" type="button">Next →</button>
+          </nav>
+        </section>
+
+        <section id="reports-section" class="admin-card">
+          <h2>Reports</h2>
+          <p class="admin-hint">Click View to read the full report and act on it.</p>
+          <div class="admin-table-wrap">
+            <table class="admin-table" id="reports-table">
+              <thead>
+                <tr>
+                  <th>Sim</th><th>Reason</th><th>Reported by</th>
+                  <th>When</th><th>Status</th><th></th>
+                </tr>
+              </thead>
+              <tbody id="reports-tbody"></tbody>
+            </table>
+          </div>
+          <nav class="pagination admin-pagination" id="reports-pagination" hidden>
+            <button class="page-btn" id="reports-page-prev" type="button">← Prev</button>
+            <span class="page-indicator" id="reports-page-indicator"></span>
+            <button class="page-btn" id="reports-page-next" type="button">Next →</button>
+          </nav>
+        </section>
+
+        <section id="bans-section" class="admin-card">
+          <h2>Bans</h2>
+          <form id="ban-form" class="admin-form admin-form-row">
+            <label>Owner key (SL avatar UUID)
+              <input type="text" id="ban-owner-key" required placeholder="00000000-0000-0000-0000-000000000000">
+            </label>
+            <label>Owner name <span class="admin-optional">(optional)</span>
+              <input type="text" id="ban-owner-name">
+            </label>
+            <label>Reason
+              <input type="text" id="ban-reason" required maxlength="200">
+            </label>
+            <label>Duration
+              <select id="ban-duration">
+                <option value="permanent">Permanent</option>
+                <option value="1">1 day</option>
+                <option value="7">7 days</option>
+                <option value="30">30 days</option>
+              </select>
+            </label>
+            <button type="submit" class="btn btn-accent">Ban</button>
+          </form>
+          <p id="ban-error" class="admin-error" hidden></p>
+          <div class="admin-table-wrap">
+            <table class="admin-table" id="bans-table">
+              <thead>
+                <tr>
+                  <th>Owner</th><th>Reason</th><th>Until</th><th>Banned</th><th></th>
+                </tr>
+              </thead>
+              <tbody id="bans-tbody"></tbody>
+            </table>
+          </div>
+          <nav class="pagination admin-pagination" id="bans-pagination" hidden>
+            <button class="page-btn" id="bans-page-prev" type="button">← Prev</button>
+            <span class="page-indicator" id="bans-page-indicator"></span>
+            <button class="page-btn" id="bans-page-next" type="button">Next →</button>
+          </nav>
+        </section>
+
+        <section id="subscriptions-section" class="admin-card">
+          <h2>Subscriptions</h2>
+          <p class="admin-hint">Paid tier purchases (owner pays their Publish Object
+            directly in-world) — audit trail only, nothing to action here.
+            <span id="subscriptions-revenue"></span></p>
+          <div class="admin-table-wrap">
+            <table class="admin-table" id="subscriptions-table">
+              <thead>
+                <tr>
+                  <th>Sim</th><th>Owner</th><th>Tier</th><th>L$</th><th>Purchased</th><th>New expiry</th>
+                </tr>
+              </thead>
+              <tbody id="subscriptions-tbody"></tbody>
+            </table>
+          </div>
+          <nav class="pagination admin-pagination" id="subscriptions-pagination" hidden>
+            <button class="page-btn" id="subscriptions-page-prev" type="button">← Prev</button>
+            <span class="page-indicator" id="subscriptions-page-indicator"></span>
+            <button class="page-btn" id="subscriptions-page-next" type="button">Next →</button>
+          </nav>
+        </section>
+
+        <section id="add-admin-section" class="admin-card">
+          <h2>Add Admin</h2>
+          <p class="admin-hint">Sends an email invite — the new admin sets their own password.</p>
+          <form id="add-admin-form" class="admin-form admin-form-row">
+            <label>Email
+              <input type="email" id="add-admin-email" required>
+            </label>
+            <button type="submit" class="btn btn-accent">Send Invite</button>
+          </form>
+          <p id="add-admin-message" class="admin-hint" hidden></p>
+        </section>
+
+      </div>
+    </main>
+  </div>
 
   <dialog id="report-dialog" class="report-dialog">
     <h2>Report details</h2>

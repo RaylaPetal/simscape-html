@@ -5,16 +5,46 @@
 /* :not([hidden]) for the same reason as #dashboard below — any author rule
    setting `display` beats the browser's default [hidden] rule regardless of
    selector specificity, since origin precedence is checked before specificity. */
-.session-info:not([hidden]) {
+#sidebar-nav:not([hidden]) {
   display: flex;
-  align-items: center;
-  gap: 12px;
-  color: var(--text-muted);
-  font-size: 0.85rem;
+  flex-direction: column;
+  gap: 4px;
+  border-top: 1px solid var(--border);
+  padding-top: 14px;
 }
 
+.sidebar-nav-link {
+  display: block;
+  padding: 8px 10px;
+  border-radius: 8px;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-size: 0.88rem;
+  font-weight: 600;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.sidebar-nav-link:hover {
+  background: var(--bg);
+  color: var(--text);
+}
+
+#session-info:not([hidden]) {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.session-email {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  overflow-wrap: anywhere;
+  padding: 0 2px;
+}
+
+/* .main-content (styles.css) already supplies the page padding — this only
+   stacks the dashboard's cards with consistent spacing on top of that. */
 .admin-main {
-  padding: 32px 20px 64px;
   display: flex;
   flex-direction: column;
   gap: 24px;

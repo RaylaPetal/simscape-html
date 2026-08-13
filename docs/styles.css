@@ -30,9 +30,32 @@
   --maturity-general: #3ddc97;
   --maturity-moderate: #f59e0b;
   --maturity-adult: #d64545;
+
+  --sidebar-width: 280px;
 }
 
 * { box-sizing: border-box; }
+
+/* Themed scrollbars everywhere a scrollbar can appear — the sidebar's own
+   vertical overflow (left), the page/main-content scroll (right), and the
+   category rows' horizontal scroll all pick this up from one place. Firefox's
+   scrollbar-color/-width are inherited, so setting them once on :root cascades;
+   Webkit's ::-webkit-scrollbar pseudo-element needs the universal selector
+   since it doesn't inherit the same way. */
+:root {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) var(--bg);
+}
+
+*::-webkit-scrollbar { width: 10px; height: 10px; }
+*::-webkit-scrollbar-track { background: var(--bg); }
+*::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 999px;
+  border: 2px solid var(--bg);
+  background-clip: padding-box;
+}
+*::-webkit-scrollbar-thumb:hover { background: var(--accent); }
 
 body {
   margin: 0;
@@ -57,50 +80,79 @@ textarea:focus-visible {
   outline-offset: 2px;
 }
 
-.wrap {
-  max-width: 1100px;
-  margin: 0 auto;
-  padding: 0 20px;
+/* ---- App shell: fixed left sidebar + scrolling main content ------------- */
+
+.app-shell {
+  display: flex;
+  align-items: flex-start;
+  min-height: 100vh;
 }
 
-.site-header {
-  position: relative;
-  overflow: hidden;
-  background:
-    radial-gradient(circle at 6% 25%, rgba(245,237,248,0.4) 0 2px, transparent 3px),
-    radial-gradient(circle at 20% 75%, rgba(230,168,224,0.35) 0 1.5px, transparent 2.5px),
-    radial-gradient(circle at 38% 15%, rgba(245,237,248,0.3) 0 1.5px, transparent 2.5px),
-    radial-gradient(circle at 63% 80%, rgba(230,168,224,0.35) 0 2px, transparent 3px),
-    radial-gradient(circle at 82% 20%, rgba(245,237,248,0.35) 0 1.5px, transparent 2.5px),
-    radial-gradient(circle at 94% 60%, rgba(230,168,224,0.3) 0 1.5px, transparent 2.5px),
-    radial-gradient(ellipse 760px 280px at 50% -55%, rgba(168,85,201,0.45), transparent 70%),
-    var(--bg);
-  border-bottom: 1px solid var(--border);
-  padding: 28px 0 24px;
-}
-
-.header-inner {
-  position: relative;
-  z-index: 1;
+.sidebar {
+  flex: 0 0 var(--sidebar-width);
+  width: var(--sidebar-width);
+  position: sticky;
+  top: 0;
+  height: 100vh;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  background: var(--bg-elevated);
+  border-right: 1px solid var(--border);
+  overflow: hidden;
 }
 
-.header-top,
-.header-bottom {
+.sidebar-scroll {
+  /* flex + min-height: 0 — same reasoning as .category-row's comment below:
+     without this a flex child defaults to min-height:auto and grows to fit ALL
+     its content instead of being constrained to the space above .sidebar-footer,
+     so overflowing content would get silently clipped by .sidebar's
+     overflow:hidden instead of becoming scrollable here. */
+  flex: 1 1 0%;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 24px 20px 16px;
   display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 16px;
-  flex-wrap: wrap;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.main-content {
+  flex: 1;
+  min-width: 0;
+  padding: 24px 28px 56px;
+}
+
+.main-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  margin-bottom: 20px;
+}
+
+@media (max-width: 860px) {
+  .app-shell { flex-direction: column; }
+
+  .sidebar {
+    position: static;
+    width: 100%;
+    height: auto;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .sidebar-scroll { overflow-y: visible; }
+
+  .main-content { padding: 20px 16px 48px; }
 }
 
 .brand {
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 1.6rem;
+  font-size: 1.4rem;
   font-weight: 800;
   text-decoration: none;
   filter: drop-shadow(0 0 14px rgba(168,85,201,0.45));
@@ -113,72 +165,64 @@ textarea:focus-visible {
   color: transparent;
 }
 
-.brand-mark { width: 30px; height: 30px; }
+.brand-mark { width: 28px; height: 28px; }
+
+.tagline {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+}
 
 .slt-clock {
   font-variant-numeric: tabular-nums;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   color: var(--text-muted);
   border: 1px solid var(--border);
   border-radius: 999px;
   padding: 4px 12px;
   background: rgba(36, 20, 50, 0.6);
+  text-align: center;
 }
 
-.tagline {
-  margin: 0;
-  color: var(--text-muted);
-  font-size: 0.95rem;
-}
+/* ---- Sidebar: view toggle, search, filter groups, sort ------------------ */
 
-.header-actions {
+.view-toggle {
   display: flex;
-  gap: 10px;
-}
-
-.header-btn {
-  display: inline-flex;
-  align-items: center;
+  background: var(--bg);
   border: 1px solid var(--border);
   border-radius: 999px;
-  padding: 7px 16px;
-  font-size: 0.85rem;
+  padding: 3px;
+  gap: 2px;
+}
+
+.view-toggle-btn {
+  flex: 1;
+  background: none;
+  border: none;
+  border-radius: 999px;
+  padding: 7px 10px;
+  font-size: 0.8rem;
   font-weight: 600;
-  color: var(--text);
-  text-decoration: none;
-  background: var(--bg-elevated);
-  transition: border-color 0.15s ease, color 0.15s ease, opacity 0.15s ease;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
 }
 
-.header-btn:hover { border-color: var(--accent); color: var(--accent-pink); }
+.view-toggle-btn:hover { color: var(--text); }
 
-.header-btn-accent {
+.view-toggle-btn.is-active {
   background: linear-gradient(135deg, var(--accent-pink), var(--accent));
-  border-color: transparent;
   color: var(--on-accent);
-  box-shadow: 0 0 16px rgba(168,85,201,0.4);
-}
-
-.header-btn-accent:hover { color: var(--on-accent); opacity: 0.9; }
-
-.header-btn.is-disabled {
-  opacity: 0.5;
-  cursor: default;
-  pointer-events: none;
-}
-
-.search-row {
-  margin: 28px 0 0;
 }
 
 .search-input {
   width: 100%;
-  background: var(--bg-elevated);
+  background: var(--bg);
   border: 1px solid var(--border);
   border-radius: 999px;
-  padding: 10px 16px;
+  padding: 9px 14px;
   color: var(--text);
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-family: inherit;
   transition: border-color 0.15s ease;
 }
@@ -187,48 +231,153 @@ textarea:focus-visible {
 
 .search-input:hover { border-color: var(--accent); }
 
-.toolbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 16px;
-  flex-wrap: wrap;
-  margin: 16px 0 20px;
+.filter-group {
+  border-top: 1px solid var(--border);
+  padding-top: 14px;
 }
 
-.filters {
+.filter-group-toggle {
   display: flex;
-  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  background: none;
+  border: none;
+  color: var(--text);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  padding: 0 0 10px;
+}
+
+.chevron-icon {
+  flex-shrink: 0;
+  transition: transform 0.15s ease;
+}
+
+.filter-group-toggle.is-collapsed .chevron-icon { transform: rotate(-90deg); }
+
+.filter-group-list {
+  display: flex;
+  flex-direction: column;
   gap: 8px;
 }
 
-.filter-chip {
-  background: var(--bg-elevated);
-  border: 1px solid var(--border);
-  color: var(--text-muted);
-  border-radius: 999px;
-  padding: 6px 14px;
+.filter-group-list.is-collapsed { display: none; }
+
+.filter-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   font-size: 0.85rem;
+  color: var(--text-muted);
   cursor: pointer;
-  transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
 }
 
-.filter-chip:hover { color: var(--text); }
+.filter-checkbox:hover { color: var(--text); }
 
-.filter-chip.is-active {
+.filter-checkbox input {
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+
+.filter-checkbox-swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--theme-fallback);
+}
+
+.filter-checkbox-swatch[data-theme="BDSM"] { background: var(--theme-bdsm); }
+.filter-checkbox-swatch[data-theme="Club"] { background: var(--theme-club); }
+.filter-checkbox-swatch[data-theme="Hangout"] { background: var(--theme-hangout); }
+.filter-checkbox-swatch[data-theme="Dating"] { background: var(--theme-dating); }
+.filter-checkbox-swatch[data-theme="Roleplay"] { background: var(--theme-roleplay); }
+.filter-checkbox-swatch[data-theme="DJ"] { background: var(--theme-dj); }
+.filter-checkbox-swatch[data-theme="Games"] { background: var(--theme-games); }
+.filter-checkbox-swatch[data-theme="Adult"] { background: var(--theme-adult); }
+.filter-checkbox-swatch[data-theme="Fetish"] { background: var(--theme-fetish); }
+
+.filter-checkbox-swatch[data-maturity="General"] { background: var(--maturity-general); }
+.filter-checkbox-swatch[data-maturity="Moderate"] { background: var(--maturity-moderate); }
+.filter-checkbox-swatch[data-maturity="Adult"] { background: var(--maturity-adult); }
+
+.sort-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border-top: 1px solid var(--border);
+  padding-top: 14px;
+}
+
+.sort-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text);
+}
+
+.sort-select {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-radius: 8px;
+  padding: 7px 10px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: border-color 0.15s ease;
+}
+
+.sort-select:hover { border-color: var(--accent); }
+
+/* ---- Sidebar footer: clock + external links, pinned to the bottom ------- */
+
+.sidebar-footer {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px 20px 20px;
+  border-top: 1px solid var(--border);
+}
+
+.sidebar-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text);
+  text-decoration: none;
+  background: var(--bg);
+  transition: border-color 0.15s ease, color 0.15s ease, opacity 0.15s ease;
+}
+
+.sidebar-link:hover { border-color: var(--accent); color: var(--accent-pink); }
+
+.sidebar-link-accent {
   background: linear-gradient(135deg, var(--accent-pink), var(--accent));
   border-color: transparent;
   color: var(--on-accent);
-  font-weight: 600;
+  box-shadow: 0 0 16px rgba(168,85,201,0.4);
 }
 
-.toolbar-meta {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  color: var(--text-muted);
-  font-size: 0.9rem;
+.sidebar-link-accent:hover { color: var(--on-accent); opacity: 0.9; }
+
+.sidebar-link.is-disabled {
+  opacity: 0.5;
+  cursor: default;
+  pointer-events: none;
 }
+
+/* ---- Main content: count/refresh bar, status, pagination ---------------- */
 
 .refresh-btn {
   background: var(--bg-elevated);
@@ -251,23 +400,6 @@ textarea:focus-visible {
   cursor: default;
   pointer-events: none;
 }
-
-.sort-label {
-  font-size: 0.85rem;
-}
-
-.sort-select {
-  background: var(--bg-elevated);
-  border: 1px solid var(--border);
-  color: var(--text);
-  border-radius: 8px;
-  padding: 6px 10px;
-  font-size: 0.85rem;
-  cursor: pointer;
-  transition: border-color 0.15s ease;
-}
-
-.sort-select:hover { border-color: var(--accent); }
 
 /* :not([hidden]) — an author rule setting `display` beats the browser's
    default [hidden] { display: none } rule regardless of selector specificity
@@ -311,11 +443,98 @@ textarea:focus-visible {
   text-align: center;
 }
 
-.venue-grid {
+/* ---- Grouped (by-category) view: stacked horizontal-scroll rows --------- */
+
+.grouped-view:not([hidden]) {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  padding-bottom: 48px;
+}
+
+.category-section { min-width: 0; }
+
+.category-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  color: var(--accent-pink);
+  cursor: pointer;
+  padding: 0 0 12px;
+  width: 100%;
+}
+
+.category-header .chevron-icon { transition: transform 0.15s ease; }
+
+.category-header.is-collapsed .chevron-icon { transform: rotate(-90deg); }
+
+.category-title {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.category-count {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.category-row-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.category-row-wrap.is-collapsed { display: none; }
+
+.category-row {
+  /* flex + min-width: 0 — without this, a flex child's default min-width:auto
+     lets it grow to fit ALL its cards instead of shrinking to the space between
+     the two arrow buttons, which would silently defeat overflow-x:auto (the row
+     would just expand instead of scrolling). */
+  flex: 1 1 0%;
+  min-width: 0;
+  display: flex;
+  gap: 16px;
+  overflow-x: auto;
+  scroll-snap-type: x proximity;
+  padding-bottom: 6px;
+}
+
+.row-scroll-btn {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--bg-elevated-2);
+  color: var(--text);
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.row-scroll-btn:hover { border-color: var(--accent); color: var(--accent-pink); }
+
+/* ---- Venue cards (shared by grouped rows and the flat "All" grid) ------- */
+
+.venue-grid:not([hidden]) {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 16px;
   padding-bottom: 48px;
+}
+
+.category-row .venue-card {
+  flex: 0 0 270px;
+  scroll-snap-align: start;
 }
 
 .venue-card {
@@ -383,8 +602,7 @@ textarea:focus-visible {
 
 .venue-card-top {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
+  flex-direction: column;
   gap: 8px;
   padding: 0 16px;
 }
@@ -401,7 +619,7 @@ textarea:focus-visible {
   flex-shrink: 0;
   display: flex;
   flex-wrap: wrap;
-  justify-content: flex-end;
+  justify-content: flex-start;
   gap: 4px;
 }
 
@@ -449,6 +667,13 @@ textarea:focus-visible {
   border-radius: 50%;
   background: var(--good);
   display: inline-block;
+}
+
+.region-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .venue-card-actions {

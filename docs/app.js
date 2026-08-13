@@ -6,6 +6,11 @@ const THEMES = [
   "DJ", "Games", "Adult", "Fetish",
 ];
 
+// Keep in sync with the venues.maturity CHECK constraint (see
+// supabase/migrations/0016_venue_maturity.sql) and MATURITY_RATINGS in
+// supabase/functions/_shared/venues.ts.
+const MATURITIES = ["General", "Moderate", "Adult"];
+
 // 5 minutes — bounds sustained-tab-open PostgREST bandwidth on the Supabase free
 // tier. The refresh button's cooldown (startRefreshCooldown() below) follows this
 // same constant automatically, so both stay in sync with a single change here.
@@ -19,20 +24,25 @@ const SLT_TIME_ZONE = "America/Los_Angeles";
 
 const { SUPABASE_URL, SUPABASE_ANON_KEY, HUD_MARKETPLACE_URL } = window.SIMSCAPE_CONFIG;
 
+const elGroupedView = document.getElementById("grouped-view");
 const elGrid = document.getElementById("venue-grid");
 const elStatus = document.getElementById("status-message");
 const elCount = document.getElementById("venue-count");
-const elFilters = document.getElementById("theme-filters");
+const elThemesFilterList = document.getElementById("themes-filter-list");
+const elMaturityFilterList = document.getElementById("maturity-filter-list");
 const elSearchInput = document.getElementById("search-input");
 const elRefreshBtn = document.getElementById("refresh-btn");
 const elSortSelect = document.getElementById("sort-select");
 const elSltClock = document.getElementById("slt-clock");
 const elHudBtn = document.getElementById("hud-btn");
+const elViewGroupedBtn = document.getElementById("view-grouped-btn");
+const elViewAllBtn = document.getElementById("view-all-btn");
 const elPagination = document.getElementById("pagination");
 const elPagePrev = document.getElementById("page-prev");
 const elPageNext = document.getElementById("page-next");
 const elPageIndicator = document.getElementById("page-indicator");
 const cardTemplate = document.getElementById("venue-card-template");
+const categorySectionTemplate = document.getElementById("category-section-template");
 
 const elReportDialog = document.getElementById("report-dialog");
 const elReportForm = document.getElementById("report-form");
@@ -61,9 +71,11 @@ const elVdExpires = document.getElementById("vd-expires");
 const elVdTeleportLink = document.getElementById("vd-teleport-link");
 
 let allVenues = [];
-let activeTheme = "all";
+let selectedThemes = new Set();     // empty = no filter, every theme matches
+let selectedMaturities = new Set(); // empty = no filter, every rating matches
 let sortMode = "population_desc";
 let searchQuery = "";
+let viewMode = "grouped"; // "grouped" (category rows) | "all" (flat paginated grid)
 let pageIndex = 0;
 let reportingVenue = null;
 
@@ -76,27 +88,61 @@ const SORTERS = {
   theme_asc: (a, b) => a.themes[0].localeCompare(b.themes[0]) || a.name.localeCompare(b.name),
 };
 
-function buildThemeFilterChips() {
+function buildFilterCheckbox(value, kind) {
+  const wrapper = document.createElement("label");
+  wrapper.className = "filter-checkbox";
+
+  const input = document.createElement("input");
+  input.type = "checkbox";
+  input.value = value;
+  input.addEventListener("change", () => {
+    const set = kind === "theme" ? selectedThemes : selectedMaturities;
+    if (input.checked) set.add(value);
+    else set.delete(value);
+    pageIndex = 0;
+    render();
+  });
+
+  const swatch = document.createElement("span");
+  swatch.className = "filter-checkbox-swatch";
+  if (kind === "theme") swatch.dataset.theme = value;
+  else swatch.dataset.maturity = value;
+
+  wrapper.appendChild(input);
+  wrapper.appendChild(swatch);
+  wrapper.appendChild(document.createTextNode(value));
+  return wrapper;
+}
+
+function buildFilterGroups() {
   for (const theme of THEMES) {
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.className = "filter-chip";
-    btn.dataset.theme = theme;
-    btn.textContent = theme;
-    elFilters.appendChild(btn);
+    elThemesFilterList.appendChild(buildFilterCheckbox(theme, "theme"));
+  }
+  for (const maturity of MATURITIES) {
+    elMaturityFilterList.appendChild(buildFilterCheckbox(maturity, "maturity"));
   }
 }
 
-elFilters.addEventListener("click", (event) => {
-  const btn = event.target.closest(".filter-chip");
-  if (!btn) return;
-  activeTheme = btn.dataset.theme;
-  for (const chip of elFilters.querySelectorAll(".filter-chip")) {
-    chip.classList.toggle("is-active", chip === btn);
-  }
+// Collapsible sidebar filter groups (Themes/Maturity) — static, wired once.
+document.querySelectorAll(".filter-group-toggle").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const target = document.getElementById(btn.dataset.target);
+    const collapsed = target.classList.toggle("is-collapsed");
+    btn.classList.toggle("is-collapsed", collapsed);
+    btn.setAttribute("aria-expanded", String(!collapsed));
+  });
+});
+
+function setViewMode(mode) {
+  viewMode = mode;
+  elViewGroupedBtn.classList.toggle("is-active", mode === "grouped");
+  elViewAllBtn.classList.toggle("is-active", mode === "all");
   pageIndex = 0;
   render();
-});
+}
+
+elViewGroupedBtn.addEventListener("click", () => setViewMode("grouped"));
+elViewAllBtn.addEventListener("click", () => setViewMode("all"));
 
 elSortSelect.addEventListener("change", () => {
   sortMode = elSortSelect.value;
@@ -177,26 +223,32 @@ async function loadVenues() {
   }
 }
 
-function render() {
-  let filtered = activeTheme === "all"
-    ? allVenues.slice()
-    : allVenues.filter((v) => v.themes.includes(activeTheme));
-
+function getFilteredVenues() {
+  let filtered = allVenues;
+  if (selectedThemes.size > 0) {
+    filtered = filtered.filter((v) => v.themes.some((t) => selectedThemes.has(t)));
+  }
+  if (selectedMaturities.size > 0) {
+    filtered = filtered.filter((v) => selectedMaturities.has(v.maturity));
+  }
   if (searchQuery) {
     filtered = filtered.filter((v) =>
       v.name.toLowerCase().includes(searchQuery) ||
       v.region_name.toLowerCase().includes(searchQuery));
   }
+  return filtered;
+}
 
-  filtered.sort(SORTERS[sortMode]);
+function render() {
+  const filtered = getFilteredVenues();
 
   elCount.textContent = filtered.length === 1
     ? "1 sim open"
     : `${filtered.length} sims open`;
 
-  elGrid.innerHTML = "";
-
   if (filtered.length === 0) {
+    elGroupedView.hidden = true;
+    elGrid.hidden = true;
     elPagination.hidden = true;
     setStatus(
       allVenues.length === 0
@@ -207,10 +259,74 @@ function render() {
   }
   setStatus("");
 
-  const pageCount = Math.ceil(filtered.length / PAGE_SIZE);
+  if (viewMode === "grouped") {
+    elGrid.hidden = true;
+    elPagination.hidden = true;
+    elGroupedView.hidden = false;
+    renderGrouped(filtered);
+  } else {
+    elGroupedView.hidden = true;
+    elGrid.hidden = false;
+    renderFlat(filtered);
+  }
+}
+
+function renderGrouped(filtered) {
+  elGroupedView.innerHTML = "";
+  // Checking specific themes narrows which sections appear too, not just what's
+  // inside them — with nothing checked, every theme that has at least one match
+  // gets its own row.
+  const themesToShow = selectedThemes.size > 0 ? THEMES.filter((t) => selectedThemes.has(t)) : THEMES;
+
+  for (const theme of themesToShow) {
+    const matches = filtered.filter((v) => v.themes.includes(theme));
+    if (matches.length === 0) continue;
+    matches.sort(SORTERS[sortMode]);
+    elGroupedView.appendChild(renderCategorySection(theme, matches));
+  }
+}
+
+function renderCategorySection(theme, venues) {
+  const node = categorySectionTemplate.content.cloneNode(true);
+  node.querySelector(".category-title").textContent = theme;
+  node.querySelector(".category-count").textContent = venues.length;
+
+  const row = node.querySelector(".category-row");
+  for (const venue of venues) {
+    row.appendChild(renderCard(venue));
+  }
+  return node;
+}
+
+// Collapsing a section and the horizontal scroll-row arrows both delegate off
+// the stable #grouped-view parent, since its section children are torn down and
+// rebuilt on every render() — listeners attached directly to them wouldn't survive.
+elGroupedView.addEventListener("click", (event) => {
+  const header = event.target.closest(".category-header");
+  if (header) {
+    const wrap = header.closest(".category-section").querySelector(".category-row-wrap");
+    const collapsed = wrap.classList.toggle("is-collapsed");
+    header.classList.toggle("is-collapsed", collapsed);
+    return;
+  }
+
+  const scrollBtn = event.target.closest(".row-scroll-btn");
+  if (scrollBtn) {
+    const row = scrollBtn.closest(".category-row-wrap").querySelector(".category-row");
+    const direction = scrollBtn.classList.contains("row-scroll-prev") ? -1 : 1;
+    row.scrollBy({ left: direction * row.clientWidth * 0.9, behavior: "smooth" });
+  }
+});
+
+function renderFlat(filtered) {
+  const sorted = filtered.slice().sort(SORTERS[sortMode]);
+
+  elGrid.innerHTML = "";
+
+  const pageCount = Math.ceil(sorted.length / PAGE_SIZE);
   pageIndex = Math.min(pageIndex, pageCount - 1);
   const start = pageIndex * PAGE_SIZE;
-  const pageVenues = filtered.slice(start, start + PAGE_SIZE);
+  const pageVenues = sorted.slice(start, start + PAGE_SIZE);
 
   for (const venue of pageVenues) {
     elGrid.appendChild(renderCard(venue));
@@ -390,7 +506,7 @@ function setStatus(message) {
   elStatus.hidden = !message;
 }
 
-buildThemeFilterChips();
+buildFilterGroups();
 setupExternalButton(elHudBtn, HUD_MARKETPLACE_URL);
 updateSltClock();
 setInterval(updateSltClock, 1000);

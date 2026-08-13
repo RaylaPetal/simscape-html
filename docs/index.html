@@ -8,61 +8,87 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header class="site-header">
-    <div class="wrap header-inner">
-      <div class="header-top">
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="sidebar-scroll">
         <a class="brand" href="./">
           <img src="assets/logo.svg" alt="" class="brand-mark">
           <span>Simscape</span>
         </a>
-        <span class="slt-clock" id="slt-clock" title="Second Life Time (Pacific)"></span>
-      </div>
-      <div class="header-bottom">
         <p class="tagline">Live, currently-open Second Life sims</p>
-        <div class="header-actions">
-          <a id="hud-btn" class="header-btn" target="_blank" rel="noopener">Get the HUD</a>
-          <a class="header-btn header-btn-accent" target="_blank" rel="noopener"
-             href="https://my.secondlife.com/raypetal#about_tab">Donate L$</a>
+
+        <div class="view-toggle" role="group" aria-label="View mode">
+          <button type="button" class="view-toggle-btn is-active" id="view-grouped-btn">By Category</button>
+          <button type="button" class="view-toggle-btn" id="view-all-btn">All</button>
         </div>
-      </div>
-    </div>
-  </header>
 
-  <main class="wrap">
-    <div class="search-row">
-      <input type="search" id="search-input" class="search-input"
-             placeholder="Search sims by name or region…" aria-label="Search sims">
-    </div>
+        <input type="search" id="search-input" class="search-input"
+               placeholder="Search sims by name or region…" aria-label="Search sims">
 
-    <div class="toolbar">
-      <div class="filters" id="theme-filters" role="group" aria-label="Filter by theme">
-        <button class="filter-chip is-active" data-theme="all" type="button">All</button>
-        <!-- theme chips are injected by app.js from THEMES, kept in sync with
-             lsl/shared_reference/themes.md -->
+        <div class="filter-group">
+          <button type="button" class="filter-group-toggle" aria-expanded="true" data-target="themes-filter-list">
+            <svg class="chevron-icon" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+            <span>Themes</span>
+          </button>
+          <div class="filter-group-list" id="themes-filter-list" role="group" aria-label="Filter by theme">
+            <!-- checkboxes injected by app.js from THEMES, kept in sync with lsl/shared_reference/themes.md -->
+          </div>
+        </div>
+
+        <div class="filter-group">
+          <button type="button" class="filter-group-toggle" aria-expanded="true" data-target="maturity-filter-list">
+            <svg class="chevron-icon" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                 stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+            <span>Maturity</span>
+          </button>
+          <div class="filter-group-list" id="maturity-filter-list" role="group" aria-label="Filter by maturity rating">
+            <!-- checkboxes injected by app.js from MATURITIES -->
+          </div>
+        </div>
+
+        <label class="sort-field">
+          <span class="sort-label">Sort</span>
+          <select id="sort-select" class="sort-select">
+            <option value="population_desc">Population (high–low)</option>
+            <option value="population_asc">Population (low–high)</option>
+            <option value="name_asc">Name (A–Z)</option>
+            <option value="theme_asc">Theme (A–Z)</option>
+          </select>
+        </label>
       </div>
-      <div class="toolbar-meta">
-        <label class="sort-label" for="sort-select">Sort</label>
-        <select id="sort-select" class="sort-select">
-          <option value="population_desc">Population (high–low)</option>
-          <option value="population_asc">Population (low–high)</option>
-          <option value="name_asc">Name (A–Z)</option>
-          <option value="theme_asc">Theme (A–Z)</option>
-        </select>
+
+      <div class="sidebar-footer">
+        <span class="slt-clock" id="slt-clock" title="Second Life Time (Pacific)"></span>
+        <a id="hud-btn" class="sidebar-link" target="_blank" rel="noopener">Get the HUD</a>
+        <a class="sidebar-link sidebar-link-accent" target="_blank" rel="noopener"
+           href="https://my.secondlife.com/raypetal#about_tab">Donate L$</a>
+      </div>
+    </aside>
+
+    <main class="main-content">
+      <div class="main-topbar">
         <span id="venue-count">Loading…</span>
         <button id="refresh-btn" class="refresh-btn" type="button" title="Refresh now">⟳</button>
       </div>
-    </div>
 
-    <p id="status-message" class="status-message" hidden></p>
+      <p id="status-message" class="status-message" hidden></p>
 
-    <section id="venue-grid" class="venue-grid" aria-live="polite"></section>
+      <div id="grouped-view" class="grouped-view"></div>
 
-    <nav class="pagination" id="pagination" aria-label="Pagination" hidden>
-      <button id="page-prev" class="page-btn" type="button">← Prev</button>
-      <span id="page-indicator" class="page-indicator"></span>
-      <button id="page-next" class="page-btn" type="button">Next →</button>
-    </nav>
-  </main>
+      <section id="venue-grid" class="venue-grid" aria-live="polite" hidden></section>
+
+      <nav class="pagination" id="pagination" aria-label="Pagination" hidden>
+        <button id="page-prev" class="page-btn" type="button">← Prev</button>
+        <span id="page-indicator" class="page-indicator"></span>
+        <button id="page-next" class="page-btn" type="button">Next →</button>
+      </nav>
+    </main>
+  </div>
 
   <template id="venue-card-template">
     <article class="venue-card">
@@ -71,7 +97,7 @@
         <span class="maturity-badge"></span>
       </div>
       <div class="venue-card-top">
-        <h2 class="venue-name"></h2>
+        <h3 class="venue-name"></h3>
         <div class="theme-badges"></div>
       </div>
       <div class="venue-card-bottom">
@@ -94,6 +120,24 @@
         </button>
       </div>
     </article>
+  </template>
+
+  <template id="category-section-template">
+    <section class="category-section">
+      <button type="button" class="category-header">
+        <svg class="chevron-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <polyline points="6 9 12 15 18 9"></polyline>
+        </svg>
+        <h2 class="category-title"></h2>
+        <span class="category-count"></span>
+      </button>
+      <div class="category-row-wrap">
+        <button type="button" class="row-scroll-btn row-scroll-prev" aria-label="Scroll left">‹</button>
+        <div class="category-row"></div>
+        <button type="button" class="row-scroll-btn row-scroll-next" aria-label="Scroll right">›</button>
+      </div>
+    </section>
   </template>
 
   <dialog id="report-dialog" class="report-dialog">

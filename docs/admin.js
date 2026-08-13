@@ -12,6 +12,7 @@ const client = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 const elLoginSection = document.getElementById("login-section");
 const elDashboard = document.getElementById("dashboard");
+const elSidebarNav = document.getElementById("sidebar-nav");
 const elSessionInfo = document.getElementById("session-info");
 const elSessionEmail = document.getElementById("session-email");
 const elSignOutBtn = document.getElementById("sign-out-btn");
@@ -129,6 +130,7 @@ function showLogin() {
   elLoginSection.hidden = false;
   elSetPasswordSection.hidden = true;
   elDashboard.hidden = true;
+  elSidebarNav.hidden = true;
   elSessionInfo.hidden = true;
 }
 
@@ -136,6 +138,7 @@ function showSetPassword() {
   elLoginSection.hidden = true;
   elSetPasswordSection.hidden = false;
   elDashboard.hidden = true;
+  elSidebarNav.hidden = true;
   elSessionInfo.hidden = true;
 }
 
@@ -143,6 +146,7 @@ function showDashboard(session) {
   elLoginSection.hidden = true;
   elSetPasswordSection.hidden = true;
   elDashboard.hidden = false;
+  elSidebarNav.hidden = false;
   elSessionInfo.hidden = false;
   elSessionEmail.textContent = session.user.email;
   loadAll();
