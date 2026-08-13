@@ -166,7 +166,7 @@ function renderVenuesPage(venues) {
     const tr = document.createElement("tr");
 
     tr.appendChild(cell(venue.name));
-    tr.appendChild(cell(venue.theme));
+    tr.appendChild(cell(venue.themes.join(", ")));
     tr.appendChild(cell(String(venue.population)));
     tr.appendChild(cell(venue.owner_name || venue.owner_key));
 

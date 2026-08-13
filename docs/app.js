@@ -2,8 +2,8 @@
 // anon key (see docs/config.js). No build step, no framework.
 
 const THEMES = [
-  "BDSM", "Club", "Venue", "Hangout", "Dating",
-  "Roleplay", "Live Music", "Shopping", "Other",
+  "BDSM", "Club", "Hangout", "Dating", "Roleplay",
+  "DJ", "Games", "Adult", "Fetish",
 ];
 
 const REFRESH_INTERVAL_MS = 60_000;
@@ -53,7 +53,9 @@ const SORTERS = {
   population_desc: (a, b) => b.population - a.population,
   population_asc: (a, b) => a.population - b.population,
   name_asc: (a, b) => a.name.localeCompare(b.name),
-  theme_asc: (a, b) => a.theme.localeCompare(b.theme) || a.name.localeCompare(b.name),
+  // Sorts by each venue's first (primary) theme — a venue has up to 3, no single
+  // total order across the set, so the first one picked stands in for the rest.
+  theme_asc: (a, b) => a.themes[0].localeCompare(b.themes[0]) || a.name.localeCompare(b.name),
 };
 
 function buildThemeFilterChips() {
@@ -145,7 +147,7 @@ async function loadVenues() {
 function render() {
   const filtered = activeTheme === "all"
     ? allVenues.slice()
-    : allVenues.filter((v) => v.theme === activeTheme);
+    : allVenues.filter((v) => v.themes.includes(activeTheme));
 
   filtered.sort(SORTERS[sortMode]);
 
@@ -185,13 +187,20 @@ function renderCard(venue) {
   const node = cardTemplate.content.cloneNode(true);
   node.querySelector(".venue-name").textContent = venue.name;
 
-  const badge = node.querySelector(".theme-badge");
-  badge.textContent = venue.theme;
-  badge.dataset.theme = venue.theme;
+  const badgeContainer = node.querySelector(".theme-badges");
+  for (const theme of venue.themes) {
+    const badge = document.createElement("span");
+    badge.className = "theme-badge";
+    badge.textContent = theme;
+    badge.dataset.theme = theme;
+    badgeContainer.appendChild(badge);
+  }
 
   const photoWrap = node.querySelector(".venue-photo-wrap");
   const photo = node.querySelector(".venue-photo");
-  photoWrap.dataset.theme = venue.theme;
+  // The gradient fallback background only has room for one color — use the
+  // first (primary) theme, same convention as the theme_asc sort.
+  photoWrap.dataset.theme = venue.themes[0];
   if (venue.photo_texture_uuid) {
     // Second Life's (unofficial, undocumented-by-Linden) Picture Service —
     // converts an SL texture asset to a JPEG thumbnail by UUID. Only fixed
