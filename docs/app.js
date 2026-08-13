@@ -6,7 +6,10 @@ const THEMES = [
   "DJ", "Games", "Adult", "Fetish",
 ];
 
-const REFRESH_INTERVAL_MS = 60_000;
+// 5 minutes — bounds sustained-tab-open PostgREST bandwidth on the Supabase free
+// tier. The refresh button's cooldown (startRefreshCooldown() below) follows this
+// same constant automatically, so both stay in sync with a single change here.
+const REFRESH_INTERVAL_MS = 300_000;
 const PAGE_SIZE = 12;
 
 // Second Life Time is always US Pacific — it follows Pacific's own DST rules,
