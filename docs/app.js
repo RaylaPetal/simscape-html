@@ -24,7 +24,6 @@ const SLT_TIME_ZONE = "America/Los_Angeles";
 
 const { SUPABASE_URL, SUPABASE_ANON_KEY, HUD_MARKETPLACE_URL } = window.SIMSCAPE_CONFIG;
 
-const elGroupedView = document.getElementById("grouped-view");
 const elGrid = document.getElementById("venue-grid");
 const elStatus = document.getElementById("status-message");
 const elCount = document.getElementById("venue-count");
@@ -35,14 +34,11 @@ const elRefreshBtn = document.getElementById("refresh-btn");
 const elSortSelect = document.getElementById("sort-select");
 const elSltClock = document.getElementById("slt-clock");
 const elHudBtn = document.getElementById("hud-btn");
-const elViewGroupedBtn = document.getElementById("view-grouped-btn");
-const elViewAllBtn = document.getElementById("view-all-btn");
 const elPagination = document.getElementById("pagination");
 const elPagePrev = document.getElementById("page-prev");
 const elPageNext = document.getElementById("page-next");
 const elPageIndicator = document.getElementById("page-indicator");
 const cardTemplate = document.getElementById("venue-card-template");
-const categorySectionTemplate = document.getElementById("category-section-template");
 
 const elReportDialog = document.getElementById("report-dialog");
 const elReportForm = document.getElementById("report-form");
@@ -75,7 +71,6 @@ let selectedThemes = new Set();     // empty = no filter, every theme matches
 let selectedMaturities = new Set(); // empty = no filter, every rating matches
 let sortMode = "population_desc";
 let searchQuery = "";
-let viewMode = "grouped"; // "grouped" (category rows) | "all" (flat paginated grid)
 let pageIndex = 0;
 let reportingVenue = null;
 
@@ -132,17 +127,6 @@ document.querySelectorAll(".filter-group-toggle").forEach((btn) => {
     btn.setAttribute("aria-expanded", String(!collapsed));
   });
 });
-
-function setViewMode(mode) {
-  viewMode = mode;
-  elViewGroupedBtn.classList.toggle("is-active", mode === "grouped");
-  elViewAllBtn.classList.toggle("is-active", mode === "all");
-  pageIndex = 0;
-  render();
-}
-
-elViewGroupedBtn.addEventListener("click", () => setViewMode("grouped"));
-elViewAllBtn.addEventListener("click", () => setViewMode("all"));
 
 elSortSelect.addEventListener("change", () => {
   sortMode = elSortSelect.value;
@@ -247,7 +231,6 @@ function render() {
     : `${filtered.length} sims open`;
 
   if (filtered.length === 0) {
-    elGroupedView.hidden = true;
     elGrid.hidden = true;
     elPagination.hidden = true;
     setStatus(
@@ -258,67 +241,8 @@ function render() {
     return;
   }
   setStatus("");
+  elGrid.hidden = false;
 
-  if (viewMode === "grouped") {
-    elGrid.hidden = true;
-    elPagination.hidden = true;
-    elGroupedView.hidden = false;
-    renderGrouped(filtered);
-  } else {
-    elGroupedView.hidden = true;
-    elGrid.hidden = false;
-    renderFlat(filtered);
-  }
-}
-
-function renderGrouped(filtered) {
-  elGroupedView.innerHTML = "";
-  // Checking specific themes narrows which sections appear too, not just what's
-  // inside them — with nothing checked, every theme that has at least one match
-  // gets its own row.
-  const themesToShow = selectedThemes.size > 0 ? THEMES.filter((t) => selectedThemes.has(t)) : THEMES;
-
-  for (const theme of themesToShow) {
-    const matches = filtered.filter((v) => v.themes.includes(theme));
-    if (matches.length === 0) continue;
-    matches.sort(SORTERS[sortMode]);
-    elGroupedView.appendChild(renderCategorySection(theme, matches));
-  }
-}
-
-function renderCategorySection(theme, venues) {
-  const node = categorySectionTemplate.content.cloneNode(true);
-  node.querySelector(".category-title").textContent = theme;
-  node.querySelector(".category-count").textContent = venues.length;
-
-  const row = node.querySelector(".category-row");
-  for (const venue of venues) {
-    row.appendChild(renderCard(venue));
-  }
-  return node;
-}
-
-// Collapsing a section and the horizontal scroll-row arrows both delegate off
-// the stable #grouped-view parent, since its section children are torn down and
-// rebuilt on every render() — listeners attached directly to them wouldn't survive.
-elGroupedView.addEventListener("click", (event) => {
-  const header = event.target.closest(".category-header");
-  if (header) {
-    const wrap = header.closest(".category-section").querySelector(".category-row-wrap");
-    const collapsed = wrap.classList.toggle("is-collapsed");
-    header.classList.toggle("is-collapsed", collapsed);
-    return;
-  }
-
-  const scrollBtn = event.target.closest(".row-scroll-btn");
-  if (scrollBtn) {
-    const row = scrollBtn.closest(".category-row-wrap").querySelector(".category-row");
-    const direction = scrollBtn.classList.contains("row-scroll-prev") ? -1 : 1;
-    row.scrollBy({ left: direction * row.clientWidth * 0.9, behavior: "smooth" });
-  }
-});
-
-function renderFlat(filtered) {
   const sorted = filtered.slice().sort(SORTERS[sortMode]);
 
   elGrid.innerHTML = "";

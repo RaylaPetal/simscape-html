@@ -17,11 +17,6 @@
         </a>
         <p class="tagline">Live, currently-open Second Life sims</p>
 
-        <div class="view-toggle" role="group" aria-label="View mode">
-          <button type="button" class="view-toggle-btn is-active" id="view-grouped-btn">By Category</button>
-          <button type="button" class="view-toggle-btn" id="view-all-btn">All</button>
-        </div>
-
         <input type="search" id="search-input" class="search-input"
                placeholder="Search sims by name or region…" aria-label="Search sims">
 
@@ -78,8 +73,6 @@
 
       <p id="status-message" class="status-message" hidden></p>
 
-      <div id="grouped-view" class="grouped-view"></div>
-
       <section id="venue-grid" class="venue-grid" aria-live="polite" hidden></section>
 
       <nav class="pagination" id="pagination" aria-label="Pagination" hidden>
@@ -97,7 +90,7 @@
         <span class="maturity-badge"></span>
       </div>
       <div class="venue-card-top">
-        <h3 class="venue-name"></h3>
+        <h2 class="venue-name"></h2>
         <div class="theme-badges"></div>
       </div>
       <div class="venue-card-bottom">
@@ -120,24 +113,6 @@
         </button>
       </div>
     </article>
-  </template>
-
-  <template id="category-section-template">
-    <section class="category-section">
-      <button type="button" class="category-header">
-        <svg class="chevron-icon" width="16" height="16" viewBox="0 0 24 24" fill="none"
-             stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <polyline points="6 9 12 15 18 9"></polyline>
-        </svg>
-        <h2 class="category-title"></h2>
-        <span class="category-count"></span>
-      </button>
-      <div class="category-row-wrap">
-        <button type="button" class="row-scroll-btn row-scroll-prev" aria-label="Scroll left">‹</button>
-        <div class="category-row"></div>
-        <button type="button" class="row-scroll-btn row-scroll-next" aria-label="Scroll right">›</button>
-      </div>
-    </section>
   </template>
 
   <dialog id="report-dialog" class="report-dialog">

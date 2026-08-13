@@ -102,11 +102,10 @@ textarea:focus-visible {
 }
 
 .sidebar-scroll {
-  /* flex + min-height: 0 — same reasoning as .category-row's comment below:
-     without this a flex child defaults to min-height:auto and grows to fit ALL
-     its content instead of being constrained to the space above .sidebar-footer,
-     so overflowing content would get silently clipped by .sidebar's
-     overflow:hidden instead of becoming scrollable here. */
+  /* flex + min-height: 0 — without this a flex child defaults to min-height:auto
+     and grows to fit ALL its content instead of being constrained to the space
+     above .sidebar-footer, so overflowing content would get silently clipped by
+     .sidebar's overflow:hidden instead of becoming scrollable here. */
   flex: 1 1 0%;
   min-height: 0;
   overflow-y: auto;
@@ -120,6 +119,23 @@ textarea:focus-visible {
   flex: 1;
   min-width: 0;
   padding: 24px 28px 56px;
+  /* Small star-like dots + two soft accent glows, same technique the old
+     site-header used — background-attachment: fixed keeps them pinned to the
+     viewport as an ambient backdrop instead of scrolling away with the content. */
+  background:
+    radial-gradient(circle at 8% 10%, rgba(245,237,248,0.4) 0 2px, transparent 3px),
+    radial-gradient(circle at 24% 32%, rgba(230,168,224,0.32) 0 1.5px, transparent 2.5px),
+    radial-gradient(circle at 41% 6%, rgba(245,237,248,0.3) 0 1.5px, transparent 2.5px),
+    radial-gradient(circle at 58% 48%, rgba(230,168,224,0.3) 0 2px, transparent 3px),
+    radial-gradient(circle at 76% 14%, rgba(245,237,248,0.35) 0 1.5px, transparent 2.5px),
+    radial-gradient(circle at 90% 60%, rgba(230,168,224,0.28) 0 1.5px, transparent 2.5px),
+    radial-gradient(circle at 14% 78%, rgba(245,237,248,0.25) 0 1.5px, transparent 2.5px),
+    radial-gradient(circle at 67% 85%, rgba(230,168,224,0.25) 0 2px, transparent 3px),
+    radial-gradient(circle at 95% 92%, rgba(245,237,248,0.22) 0 1.5px, transparent 2.5px),
+    radial-gradient(ellipse 900px 520px at 80% -8%, rgba(168,85,201,0.32), transparent 70%),
+    radial-gradient(ellipse 760px 460px at 5% 105%, rgba(168,85,201,0.22), transparent 70%),
+    var(--bg);
+  background-attachment: fixed;
 }
 
 .main-topbar {
@@ -184,36 +200,7 @@ textarea:focus-visible {
   text-align: center;
 }
 
-/* ---- Sidebar: view toggle, search, filter groups, sort ------------------ */
-
-.view-toggle {
-  display: flex;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  padding: 3px;
-  gap: 2px;
-}
-
-.view-toggle-btn {
-  flex: 1;
-  background: none;
-  border: none;
-  border-radius: 999px;
-  padding: 7px 10px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--text-muted);
-  cursor: pointer;
-  transition: background-color 0.15s ease, color 0.15s ease;
-}
-
-.view-toggle-btn:hover { color: var(--text); }
-
-.view-toggle-btn.is-active {
-  background: linear-gradient(135deg, var(--accent-pink), var(--accent));
-  color: var(--on-accent);
-}
+/* ---- Sidebar: search, filter groups, sort -------------------------------- */
 
 .search-input {
   width: 100%;
@@ -443,98 +430,13 @@ textarea:focus-visible {
   text-align: center;
 }
 
-/* ---- Grouped (by-category) view: stacked horizontal-scroll rows --------- */
-
-.grouped-view:not([hidden]) {
-  display: flex;
-  flex-direction: column;
-  gap: 28px;
-  padding-bottom: 48px;
-}
-
-.category-section { min-width: 0; }
-
-.category-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: none;
-  border: none;
-  color: var(--accent-pink);
-  cursor: pointer;
-  padding: 0 0 12px;
-  width: 100%;
-}
-
-.category-header .chevron-icon { transition: transform 0.15s ease; }
-
-.category-header.is-collapsed .chevron-icon { transform: rotate(-90deg); }
-
-.category-title {
-  margin: 0;
-  font-size: 0.95rem;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-}
-
-.category-count {
-  color: var(--text-muted);
-  font-size: 0.8rem;
-  font-weight: 600;
-}
-
-.category-row-wrap {
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.category-row-wrap.is-collapsed { display: none; }
-
-.category-row {
-  /* flex + min-width: 0 — without this, a flex child's default min-width:auto
-     lets it grow to fit ALL its cards instead of shrinking to the space between
-     the two arrow buttons, which would silently defeat overflow-x:auto (the row
-     would just expand instead of scrolling). */
-  flex: 1 1 0%;
-  min-width: 0;
-  display: flex;
-  gap: 16px;
-  overflow-x: auto;
-  scroll-snap-type: x proximity;
-  padding-bottom: 6px;
-}
-
-.row-scroll-btn {
-  flex-shrink: 0;
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  border: 1px solid var(--border);
-  background: var(--bg-elevated-2);
-  color: var(--text);
-  font-size: 1.1rem;
-  line-height: 1;
-  cursor: pointer;
-  transition: border-color 0.15s ease, color 0.15s ease;
-}
-
-.row-scroll-btn:hover { border-color: var(--accent); color: var(--accent-pink); }
-
-/* ---- Venue cards (shared by grouped rows and the flat "All" grid) ------- */
+/* ---- Venue cards, paginated grid ----------------------------------------- */
 
 .venue-grid:not([hidden]) {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 16px;
   padding-bottom: 48px;
-}
-
-.category-row .venue-card {
-  flex: 0 0 270px;
-  scroll-snap-align: start;
 }
 
 .venue-card {
