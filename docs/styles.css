@@ -167,13 +167,33 @@ textarea:focus-visible {
   pointer-events: none;
 }
 
+.search-row {
+  margin: 28px 0 0;
+}
+
+.search-input {
+  width: 100%;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 10px 16px;
+  color: var(--text);
+  font-size: 0.9rem;
+  font-family: inherit;
+  transition: border-color 0.15s ease;
+}
+
+.search-input::placeholder { color: var(--text-muted); }
+
+.search-input:hover { border-color: var(--accent); }
+
 .toolbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 16px;
   flex-wrap: wrap;
-  margin: 28px 0 20px;
+  margin: 16px 0 20px;
 }
 
 .filters {
@@ -225,6 +245,12 @@ textarea:focus-visible {
 .refresh-btn:active { transform: rotate(180deg); }
 
 .refresh-btn:hover { border-color: var(--accent); color: var(--accent-pink); }
+
+.refresh-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+  pointer-events: none;
+}
 
 .sort-label {
   font-size: 0.85rem;
@@ -459,26 +485,6 @@ textarea:focus-visible {
 .report-link:hover { background: var(--danger); color: #fff; }
 
 .report-icon { flex-shrink: 0; }
-
-.site-footer {
-  border-top: 1px solid var(--border);
-  padding: 20px 0 40px;
-  color: var(--text-muted);
-  font-size: 0.85rem;
-}
-
-.footer-credit {
-  margin: 6px 0 0;
-  font-size: 0.8rem;
-}
-
-.footer-credit .brand-name {
-  background: linear-gradient(135deg, var(--accent-pink), var(--accent));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  font-weight: 700;
-}
 
 /* ---- Shared form/button primitives (used by the report dialog here and by
    admin.css on the admin board) ---------------------------------------- */

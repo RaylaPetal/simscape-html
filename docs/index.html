@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Simscape — Live Second Life Venues</title>
+  <title>Simscape — Live Second Life Sims</title>
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -18,7 +18,7 @@
         <span class="slt-clock" id="slt-clock" title="Second Life Time (Pacific)"></span>
       </div>
       <div class="header-bottom">
-        <p class="tagline">Live, currently-open Second Life venues</p>
+        <p class="tagline">Live, currently-open Second Life sims</p>
         <div class="header-actions">
           <a id="hud-btn" class="header-btn" target="_blank" rel="noopener">Get the HUD</a>
           <a class="header-btn header-btn-accent" target="_blank" rel="noopener"
@@ -29,6 +29,11 @@
   </header>
 
   <main class="wrap">
+    <div class="search-row">
+      <input type="search" id="search-input" class="search-input"
+             placeholder="Search sims by name or region…" aria-label="Search sims">
+    </div>
+
     <div class="toolbar">
       <div class="filters" id="theme-filters" role="group" aria-label="Filter by theme">
         <button class="filter-chip is-active" data-theme="all" type="button">All</button>
@@ -58,14 +63,6 @@
       <button id="page-next" class="page-btn" type="button">Next →</button>
     </nav>
   </main>
-
-  <footer class="site-footer">
-    <div class="wrap">
-      <p>Venues are listed for a limited time by their owners (2–24 hours) and disappear
-        automatically when that time runs out.</p>
-      <p class="footer-credit">A <span class="brand-name">Ray's Den</span> project.</p>
-    </div>
-  </footer>
 
   <template id="venue-card-template">
     <article class="venue-card">

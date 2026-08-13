@@ -20,6 +20,7 @@ const elGrid = document.getElementById("venue-grid");
 const elStatus = document.getElementById("status-message");
 const elCount = document.getElementById("venue-count");
 const elFilters = document.getElementById("theme-filters");
+const elSearchInput = document.getElementById("search-input");
 const elRefreshBtn = document.getElementById("refresh-btn");
 const elSortSelect = document.getElementById("sort-select");
 const elSltClock = document.getElementById("slt-clock");
@@ -59,6 +60,7 @@ const elVdTeleportLink = document.getElementById("vd-teleport-link");
 let allVenues = [];
 let activeTheme = "all";
 let sortMode = "population_desc";
+let searchQuery = "";
 let pageIndex = 0;
 let reportingVenue = null;
 
@@ -99,6 +101,12 @@ elSortSelect.addEventListener("change", () => {
   render();
 });
 
+elSearchInput.addEventListener("input", () => {
+  searchQuery = elSearchInput.value.trim().toLowerCase();
+  pageIndex = 0;
+  render();
+});
+
 elPagePrev.addEventListener("click", () => {
   pageIndex = Math.max(0, pageIndex - 1);
   render();
@@ -110,6 +118,14 @@ elPageNext.addEventListener("click", () => {
 });
 
 elRefreshBtn.addEventListener("click", () => loadVenues());
+
+// Disabled for the same REFRESH_INTERVAL_MS window as the automatic refresh below,
+// whether triggered by that timer or a manual click — one shared cooldown instead of
+// letting manual clicks stack unlimited extra fetches on top of the auto-refresh.
+function startRefreshCooldown() {
+  elRefreshBtn.disabled = true;
+  setTimeout(() => { elRefreshBtn.disabled = false; }, REFRESH_INTERVAL_MS);
+}
 
 function setupExternalButton(el, url) {
   if (url) {
@@ -138,6 +154,7 @@ function updateSltClock() {
 }
 
 async function loadVenues() {
+  startRefreshCooldown();
   setStatus("");
   try {
     const url =
@@ -158,15 +175,21 @@ async function loadVenues() {
 }
 
 function render() {
-  const filtered = activeTheme === "all"
+  let filtered = activeTheme === "all"
     ? allVenues.slice()
     : allVenues.filter((v) => v.themes.includes(activeTheme));
+
+  if (searchQuery) {
+    filtered = filtered.filter((v) =>
+      v.name.toLowerCase().includes(searchQuery) ||
+      v.region_name.toLowerCase().includes(searchQuery));
+  }
 
   filtered.sort(SORTERS[sortMode]);
 
   elCount.textContent = filtered.length === 1
-    ? "1 venue open"
-    : `${filtered.length} venues open`;
+    ? "1 sim open"
+    : `${filtered.length} sims open`;
 
   elGrid.innerHTML = "";
 
@@ -174,8 +197,8 @@ function render() {
     elPagination.hidden = true;
     setStatus(
       allVenues.length === 0
-        ? "No venues currently open — check back soon."
-        : "No open venues match this filter right now.",
+        ? "No sims currently open — check back soon."
+        : "No open sims match this filter right now.",
     );
     return;
   }
