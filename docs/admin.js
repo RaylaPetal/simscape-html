@@ -19,6 +19,12 @@ const elSignOutBtn = document.getElementById("sign-out-btn");
 const elLoginForm = document.getElementById("login-form");
 const elLoginError = document.getElementById("login-error");
 
+const elSetPasswordSection = document.getElementById("set-password-section");
+const elSetPasswordForm = document.getElementById("set-password-form");
+const elSetPasswordInput = document.getElementById("set-password-input");
+const elSetPasswordConfirm = document.getElementById("set-password-confirm");
+const elSetPasswordError = document.getElementById("set-password-error");
+
 const elVenuesBody = document.getElementById("venues-tbody");
 const elReportsBody = document.getElementById("reports-tbody");
 const elBansBody = document.getElementById("bans-tbody");
@@ -102,8 +108,17 @@ const subscriptionsPaginator = makePaginator("subscriptions");
 
 // ---- auth --------------------------------------------------------------
 
+// An invite/recovery email link lands here with #access_token=...&type=invite (or
+// type=recovery) in the URL — supabase-js auto-detects it and establishes a real
+// session, but that alone would just drop the person straight into the dashboard
+// having never set a password, with no way to sign in again next time. Checked
+// once at load, before anything might consume/alter the hash.
+let pendingCredentialSetup = /type=(invite|recovery)/.test(window.location.hash);
+
 client.auth.onAuthStateChange((_event, session) => {
-  if (session) {
+  if (session && pendingCredentialSetup) {
+    showSetPassword();
+  } else if (session) {
     showDashboard(session);
   } else {
     showLogin();
@@ -112,12 +127,21 @@ client.auth.onAuthStateChange((_event, session) => {
 
 function showLogin() {
   elLoginSection.hidden = false;
+  elSetPasswordSection.hidden = true;
+  elDashboard.hidden = true;
+  elSessionInfo.hidden = true;
+}
+
+function showSetPassword() {
+  elLoginSection.hidden = true;
+  elSetPasswordSection.hidden = false;
   elDashboard.hidden = true;
   elSessionInfo.hidden = true;
 }
 
 function showDashboard(session) {
   elLoginSection.hidden = true;
+  elSetPasswordSection.hidden = true;
   elDashboard.hidden = false;
   elSessionInfo.hidden = false;
   elSessionEmail.textContent = session.user.email;
@@ -134,6 +158,30 @@ elLoginForm.addEventListener("submit", async (event) => {
     elLoginError.textContent = error.message;
     elLoginError.hidden = false;
   }
+});
+
+elSetPasswordForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  elSetPasswordError.hidden = true;
+
+  if (elSetPasswordInput.value !== elSetPasswordConfirm.value) {
+    elSetPasswordError.textContent = "Passwords don't match.";
+    elSetPasswordError.hidden = false;
+    return;
+  }
+
+  const { error } = await client.auth.updateUser({ password: elSetPasswordInput.value });
+  if (error) {
+    elSetPasswordError.textContent = error.message;
+    elSetPasswordError.hidden = false;
+    return;
+  }
+
+  pendingCredentialSetup = false;
+  // Drop the consumed invite/recovery tokens from the address bar.
+  history.replaceState(null, "", window.location.pathname + window.location.search);
+  const { data: sessionData } = await client.auth.getSession();
+  showDashboard(sessionData.session);
 });
 
 elSignOutBtn.addEventListener("click", () => client.auth.signOut());

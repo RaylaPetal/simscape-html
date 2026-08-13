@@ -45,6 +45,22 @@
         via the Add Admin panel, or bootstrapped directly in Supabase for the first one.</p>
     </section>
 
+    <section id="set-password-section" class="admin-card" hidden>
+      <h2>Set your password</h2>
+      <p class="admin-hint">You're signed in via an invite link — choose a password
+        to use for future sign-ins.</p>
+      <form id="set-password-form" class="admin-form">
+        <label>New password
+          <input type="password" id="set-password-input" required minlength="6" autocomplete="new-password">
+        </label>
+        <label>Confirm password
+          <input type="password" id="set-password-confirm" required minlength="6" autocomplete="new-password">
+        </label>
+        <button type="submit" class="btn btn-accent">Set Password</button>
+        <p id="set-password-error" class="admin-error" hidden></p>
+      </form>
+    </section>
+
     <div id="dashboard" hidden>
 
       <section class="admin-card">
