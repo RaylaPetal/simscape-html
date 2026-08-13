@@ -22,6 +22,8 @@ const elLoginError = document.getElementById("login-error");
 const elVenuesBody = document.getElementById("venues-tbody");
 const elReportsBody = document.getElementById("reports-tbody");
 const elBansBody = document.getElementById("bans-tbody");
+const elSubscriptionsBody = document.getElementById("subscriptions-tbody");
+const elSubscriptionsRevenue = document.getElementById("subscriptions-revenue");
 
 const elBanForm = document.getElementById("ban-form");
 const elBanError = document.getElementById("ban-error");
@@ -96,6 +98,7 @@ function paginatorSetItemsAndRender(paginator, items, renderPage) {
 const venuesPaginator = makePaginator("venues");
 const reportsPaginator = makePaginator("reports");
 const bansPaginator = makePaginator("bans");
+const subscriptionsPaginator = makePaginator("subscriptions");
 
 // ---- auth --------------------------------------------------------------
 
@@ -139,7 +142,7 @@ elSignOutBtn.addEventListener("click", () => client.auth.signOut());
 
 async function loadAll() {
   await loadVenues();
-  await Promise.all([loadReports(), loadBans()]);
+  await Promise.all([loadReports(), loadBans(), loadSubscriptions()]);
 }
 
 async function loadVenues() {
@@ -250,6 +253,41 @@ function renderBansPage(bans) {
     tr.appendChild(actionsCell);
 
     elBansBody.appendChild(tr);
+  }
+}
+
+const TIER_LABELS = { "1_week": "1 Week", "1_month": "1 Month", "3_months": "3 Months", "6_months": "6 Months" };
+
+async function loadSubscriptions() {
+  const { data, error } = await client
+    .from("subscriptions")
+    .select("*")
+    .order("purchased_at", { ascending: false });
+
+  if (error) {
+    console.error("loadSubscriptions failed", error);
+    return;
+  }
+
+  const totalRevenue = data.reduce((sum, s) => sum + s.l_dollar_amount, 0);
+  elSubscriptionsRevenue.textContent = data.length
+    ? `Total: L$${totalRevenue.toLocaleString()} across ${data.length} purchase${data.length === 1 ? "" : "s"}.`
+    : "";
+
+  paginatorSetItemsAndRender(subscriptionsPaginator, data, renderSubscriptionsPage);
+}
+
+function renderSubscriptionsPage(subscriptions) {
+  elSubscriptionsBody.innerHTML = "";
+  for (const sub of subscriptions) {
+    const tr = document.createElement("tr");
+    tr.appendChild(cell(sub.venue_name));
+    tr.appendChild(cell(sub.owner_name || sub.owner_key));
+    tr.appendChild(cell(TIER_LABELS[sub.tier] || sub.tier));
+    tr.appendChild(cell(`L$${sub.l_dollar_amount.toLocaleString()}`));
+    tr.appendChild(cell(new Date(sub.purchased_at).toLocaleString()));
+    tr.appendChild(cell(new Date(sub.expires_at_after).toLocaleString()));
+    elSubscriptionsBody.appendChild(tr);
   }
 }
 

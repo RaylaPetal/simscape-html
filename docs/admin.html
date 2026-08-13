@@ -19,6 +19,8 @@
         </a>
         <div id="session-info" class="session-info" hidden>
           <span id="session-email"></span>
+          <a class="header-btn header-btn-accent" target="_blank" rel="noopener"
+             href="secondlife:///app/agent/26fa1926-1347-40b8-aebc-17b20969d7d8/about">Donate L$</a>
           <button id="sign-out-btn" class="header-btn" type="button">Sign Out</button>
         </div>
       </div>
@@ -53,7 +55,7 @@
           <table class="admin-table" id="venues-table">
             <thead>
               <tr>
-                <th>Name</th><th>Theme</th><th>Pop.</th><th>Owner</th>
+                <th>Name</th><th>Themes</th><th>Pop.</th><th>Owner</th>
                 <th>Status</th><th>Expires</th><th></th>
               </tr>
             </thead>
@@ -125,6 +127,28 @@
           <button class="page-btn" id="bans-page-prev" type="button">← Prev</button>
           <span class="page-indicator" id="bans-page-indicator"></span>
           <button class="page-btn" id="bans-page-next" type="button">Next →</button>
+        </nav>
+      </section>
+
+      <section class="admin-card">
+        <h2>Subscriptions</h2>
+        <p class="admin-hint">Paid tier purchases (owner pays their Publish Object
+          directly in-world) — audit trail only, nothing to action here.
+          <span id="subscriptions-revenue"></span></p>
+        <div class="admin-table-wrap">
+          <table class="admin-table" id="subscriptions-table">
+            <thead>
+              <tr>
+                <th>Venue</th><th>Owner</th><th>Tier</th><th>L$</th><th>Purchased</th><th>New expiry</th>
+              </tr>
+            </thead>
+            <tbody id="subscriptions-tbody"></tbody>
+          </table>
+        </div>
+        <nav class="pagination admin-pagination" id="subscriptions-pagination" hidden>
+          <button class="page-btn" id="subscriptions-page-prev" type="button">← Prev</button>
+          <span class="page-indicator" id="subscriptions-page-indicator"></span>
+          <button class="page-btn" id="subscriptions-page-next" type="button">Next →</button>
         </nav>
       </section>
 
