@@ -12,6 +12,9 @@
   --accent-pink: #e6a8e0;
   --on-accent: #1a0d24;
   --good: #3ddc97;
+  /* Own token, not the BDSM theme color reused by coincidence — error/report
+     styling shouldn't shift if that theme's color is ever retuned, or vice versa. */
+  --danger: #ef4444;
 
   --theme-bdsm: #d64545;
   --theme-club: #d946c9;
@@ -23,6 +26,10 @@
   --theme-adult: #991b1b;
   --theme-fetish: #581c87;
   --theme-fallback: #a996b8;
+
+  --maturity-general: #3ddc97;
+  --maturity-moderate: #f59e0b;
+  --maturity-adult: #d64545;
 }
 
 * { box-sizing: border-box; }
@@ -32,6 +39,22 @@ body {
   background: var(--bg);
   color: var(--text);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* One consistent, on-brand focus ring for every interactive element, replacing
+   the browser's default (usually a blue outline that clashes with this palette
+   and is easy to miss against a dark background). :focus-visible skips it for
+   mouse clicks and only shows it for keyboard/assistive-tech navigation. */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--accent-pink);
+  outline-offset: 2px;
 }
 
 .wrap {
@@ -124,6 +147,7 @@ body {
   color: var(--text);
   text-decoration: none;
   background: var(--bg-elevated);
+  transition: border-color 0.15s ease, color 0.15s ease, opacity 0.15s ease;
 }
 
 .header-btn:hover { border-color: var(--accent); color: var(--accent-pink); }
@@ -166,6 +190,7 @@ body {
   padding: 6px 14px;
   font-size: 0.85rem;
   cursor: pointer;
+  transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
 }
 
 .filter-chip:hover { color: var(--text); }
@@ -194,7 +219,10 @@ body {
   height: 32px;
   font-size: 1rem;
   cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease, transform 0.15s ease;
 }
+
+.refresh-btn:active { transform: rotate(180deg); }
 
 .refresh-btn:hover { border-color: var(--accent); color: var(--accent-pink); }
 
@@ -210,7 +238,10 @@ body {
   padding: 6px 10px;
   font-size: 0.85rem;
   cursor: pointer;
+  transition: border-color 0.15s ease;
 }
+
+.sort-select:hover { border-color: var(--accent); }
 
 /* :not([hidden]) — an author rule setting `display` beats the browser's
    default [hidden] { display: none } rule regardless of selector specificity
@@ -233,6 +264,7 @@ body {
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
+  transition: border-color 0.15s ease, color 0.15s ease, opacity 0.15s ease;
 }
 
 .page-btn:hover:not(:disabled) { border-color: var(--accent); color: var(--accent-pink); }
@@ -269,7 +301,9 @@ body {
   flex-direction: column;
   gap: 12px;
   text-decoration: none;
+  box-shadow: 0 4px 14px rgba(10, 4, 16, 0.35);
   transition: border-color 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+  cursor: pointer;
 }
 
 .venue-card:hover {
@@ -302,6 +336,25 @@ body {
   object-fit: cover;
 }
 
+.maturity-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 1;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 3px 9px;
+  border-radius: 999px;
+  color: #fff;
+  background: var(--maturity-general);
+  box-shadow: 0 2px 8px rgba(10, 4, 16, 0.5);
+}
+
+.maturity-badge[data-maturity="Moderate"] { background: var(--maturity-moderate); }
+.maturity-badge[data-maturity="Adult"] { background: var(--maturity-adult); }
+
 .venue-card-top {
   display: flex;
   justify-content: space-between;
@@ -315,6 +368,7 @@ body {
   font-size: 1.05rem;
   font-weight: 600;
   line-height: 1.3;
+  overflow-wrap: anywhere; /* long venue names (up to 64 chars) can't push badges off-card */
 }
 
 .theme-badges {
@@ -388,15 +442,23 @@ body {
 .teleport-link:hover { text-decoration: underline; }
 
 .report-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
   background: none;
-  border: none;
-  color: var(--text-muted);
+  border: 1px solid var(--danger);
+  border-radius: 999px;
+  color: var(--danger);
   font-size: 0.78rem;
+  font-weight: 600;
+  padding: 4px 10px 4px 8px;
   cursor: pointer;
-  padding: 0;
+  transition: background-color 0.15s ease, color 0.15s ease;
 }
 
-.report-link:hover { color: var(--theme-bdsm); text-decoration: underline; }
+.report-link:hover { background: var(--danger); color: #fff; }
+
+.report-icon { flex-shrink: 0; }
 
 .site-footer {
   border-top: 1px solid var(--border);
@@ -433,7 +495,7 @@ body {
 }
 
 .admin-error {
-  color: var(--theme-bdsm);
+  color: var(--danger);
   font-size: 0.85rem;
   margin-top: 8px;
 }
@@ -527,4 +589,124 @@ body {
   justify-content: flex-end;
   gap: 10px;
   margin-top: 4px;
+}
+
+/* ---- Venue detail dialog ------------------------------------------------ */
+
+.venue-detail-dialog {
+  background: var(--bg-elevated);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 0;
+  max-width: 480px;
+  width: calc(100% - 40px);
+  overflow: hidden;
+}
+
+.venue-detail-dialog::backdrop {
+  background: rgba(10, 4, 16, 0.7);
+}
+
+.venue-detail-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 2;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(10, 4, 16, 0.55);
+  color: #fff;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.15s ease;
+}
+
+.venue-detail-close:hover { background: rgba(10, 4, 16, 0.8); }
+
+.venue-detail-photo-wrap {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  background: linear-gradient(135deg, var(--theme-fallback), var(--bg-elevated));
+}
+
+.venue-detail-photo-wrap[data-theme="BDSM"] { background: linear-gradient(135deg, var(--theme-bdsm), var(--bg-elevated)); }
+.venue-detail-photo-wrap[data-theme="Club"] { background: linear-gradient(135deg, var(--theme-club), var(--bg-elevated)); }
+.venue-detail-photo-wrap[data-theme="Hangout"] { background: linear-gradient(135deg, var(--theme-hangout), var(--bg-elevated)); }
+.venue-detail-photo-wrap[data-theme="Dating"] { background: linear-gradient(135deg, var(--theme-dating), var(--bg-elevated)); }
+.venue-detail-photo-wrap[data-theme="Roleplay"] { background: linear-gradient(135deg, var(--theme-roleplay), var(--bg-elevated)); }
+.venue-detail-photo-wrap[data-theme="DJ"] { background: linear-gradient(135deg, var(--theme-dj), var(--bg-elevated)); }
+.venue-detail-photo-wrap[data-theme="Games"] { background: linear-gradient(135deg, var(--theme-games), var(--bg-elevated)); }
+.venue-detail-photo-wrap[data-theme="Adult"] { background: linear-gradient(135deg, var(--theme-adult), var(--bg-elevated)); }
+.venue-detail-photo-wrap[data-theme="Fetish"] { background: linear-gradient(135deg, var(--theme-fetish), var(--bg-elevated)); }
+
+.venue-detail-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.venue-detail-body {
+  padding: 20px 24px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.venue-detail-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.venue-detail-top h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+.venue-detail-list {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.venue-detail-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 0.88rem;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.venue-detail-row:last-child { border-bottom: none; padding-bottom: 0; }
+
+.venue-detail-row dt {
+  color: var(--text-muted);
+}
+
+.venue-detail-row dd {
+  margin: 0;
+  font-weight: 600;
+  text-align: right;
+}
+
+.venue-detail-row dd[data-maturity="General"] { color: var(--maturity-general); }
+.venue-detail-row dd[data-maturity="Moderate"] { color: var(--maturity-moderate); }
+.venue-detail-row dd[data-maturity="Adult"] { color: var(--maturity-adult); }
+
+.venue-detail-teleport {
+  text-align: center;
+  text-decoration: none;
 }

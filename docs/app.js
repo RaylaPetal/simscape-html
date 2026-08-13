@@ -42,6 +42,20 @@ const elReportCancelBtn = document.getElementById("report-cancel-btn");
 const elReportFields = document.getElementById("report-fields");
 const elReportActions = document.getElementById("report-actions");
 
+const elVenueDetailDialog = document.getElementById("venue-detail-dialog");
+const elVdCloseBtn = document.getElementById("vd-close-btn");
+const elVdPhotoWrap = document.getElementById("vd-photo-wrap");
+const elVdPhoto = document.getElementById("vd-photo");
+const elVdMaturityBadge = document.getElementById("vd-maturity-badge");
+const elVdName = document.getElementById("vd-name");
+const elVdThemes = document.getElementById("vd-themes");
+const elVdPopulation = document.getElementById("vd-population");
+const elVdRegion = document.getElementById("vd-region");
+const elVdMaturity = document.getElementById("vd-maturity");
+const elVdPublished = document.getElementById("vd-published");
+const elVdExpires = document.getElementById("vd-expires");
+const elVdTeleportLink = document.getElementById("vd-teleport-link");
+
 let allVenues = [];
 let activeTheme = "all";
 let sortMode = "population_desc";
@@ -213,16 +227,89 @@ function renderCard(venue) {
     });
   }
 
+  const maturityBadge = node.querySelector(".maturity-badge");
+  maturityBadge.textContent = venue.maturity;
+  maturityBadge.dataset.maturity = venue.maturity;
+
   node.querySelector(".population-count").textContent = venue.population;
   node.querySelector(".region-name").textContent = venue.region_name;
 
   const link = node.querySelector(".teleport-link");
   link.href = venue.slurl;
 
-  node.querySelector(".report-link").addEventListener("click", () => openReportDialog(venue));
+  node.querySelector(".report-link").addEventListener("click", (event) => {
+    event.stopPropagation();
+    openReportDialog(venue);
+  });
+
+  const card = node.querySelector(".venue-card");
+  card.tabIndex = 0;
+  card.setAttribute("role", "button");
+  card.setAttribute("aria-label", `View details for ${venue.name}`);
+  card.addEventListener("click", (event) => {
+    if (event.target.closest("a, button")) return;
+    openVenueDetailDialog(venue);
+  });
+  card.addEventListener("keydown", (event) => {
+    if (event.target.closest("a, button")) return;
+    if (event.key !== "Enter" && event.key !== " ") return;
+    event.preventDefault();
+    openVenueDetailDialog(venue);
+  });
 
   return node;
 }
+
+function formatDateTime(iso) {
+  return new Intl.DateTimeFormat("en-US", {
+    dateStyle: "medium",
+    timeStyle: "short",
+  }).format(new Date(iso));
+}
+
+function openVenueDetailDialog(venue) {
+  elVdName.textContent = venue.name;
+
+  elVdThemes.innerHTML = "";
+  for (const theme of venue.themes) {
+    const badge = document.createElement("span");
+    badge.className = "theme-badge";
+    badge.textContent = theme;
+    badge.dataset.theme = theme;
+    elVdThemes.appendChild(badge);
+  }
+
+  elVdPhotoWrap.dataset.theme = venue.themes[0];
+  elVdPhoto.hidden = true;
+  elVdPhoto.removeAttribute("src");
+  if (venue.photo_texture_uuid) {
+    elVdPhoto.src = `https://picture-service.secondlife.com/${venue.photo_texture_uuid}/320x240.jpg`;
+    elVdPhoto.hidden = false;
+    elVdPhoto.addEventListener("error", () => {
+      elVdPhoto.hidden = true;
+      elVdPhoto.removeAttribute("src");
+    }, { once: true });
+  }
+
+  elVdMaturityBadge.textContent = venue.maturity;
+  elVdMaturityBadge.dataset.maturity = venue.maturity;
+
+  elVdPopulation.textContent = venue.population;
+  elVdRegion.textContent = venue.region_name;
+  elVdMaturity.textContent = venue.maturity;
+  elVdMaturity.dataset.maturity = venue.maturity;
+  elVdPublished.textContent = formatDateTime(venue.published_at);
+  elVdExpires.textContent = formatDateTime(venue.expires_at);
+  elVdTeleportLink.href = venue.slurl;
+
+  elVenueDetailDialog.showModal();
+}
+
+elVdCloseBtn.addEventListener("click", () => elVenueDetailDialog.close());
+
+elVenueDetailDialog.addEventListener("click", (event) => {
+  if (event.target === elVenueDetailDialog) elVenueDetailDialog.close();
+});
 
 function openReportDialog(venue) {
   reportingVenue = venue;
