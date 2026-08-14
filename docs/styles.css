@@ -25,6 +25,9 @@
   --theme-games: #84cc16;
   --theme-adult: #991b1b;
   --theme-fetish: #581c87;
+  --theme-exploration: #14b8a6;
+  --theme-fantasy: #8b5cf6;
+  --theme-other: #6b7280;
   --theme-fallback: #a996b8;
 
   --maturity-general: #3ddc97;
@@ -287,6 +290,9 @@ textarea:focus-visible {
 .filter-checkbox-swatch[data-theme="Games"] { background: var(--theme-games); }
 .filter-checkbox-swatch[data-theme="Adult"] { background: var(--theme-adult); }
 .filter-checkbox-swatch[data-theme="Fetish"] { background: var(--theme-fetish); }
+.filter-checkbox-swatch[data-theme="Exploration"] { background: var(--theme-exploration); }
+.filter-checkbox-swatch[data-theme="Fantasy"] { background: var(--theme-fantasy); }
+.filter-checkbox-swatch[data-theme="Other"] { background: var(--theme-other); }
 
 .filter-checkbox-swatch[data-maturity="General"] { background: var(--maturity-general); }
 .filter-checkbox-swatch[data-maturity="Moderate"] { background: var(--maturity-moderate); }
@@ -474,6 +480,9 @@ textarea:focus-visible {
 .venue-photo-wrap[data-theme="Games"] { background: linear-gradient(135deg, var(--theme-games), var(--bg-elevated)); }
 .venue-photo-wrap[data-theme="Adult"] { background: linear-gradient(135deg, var(--theme-adult), var(--bg-elevated)); }
 .venue-photo-wrap[data-theme="Fetish"] { background: linear-gradient(135deg, var(--theme-fetish), var(--bg-elevated)); }
+.venue-photo-wrap[data-theme="Exploration"] { background: linear-gradient(135deg, var(--theme-exploration), var(--bg-elevated)); }
+.venue-photo-wrap[data-theme="Fantasy"] { background: linear-gradient(135deg, var(--theme-fantasy), var(--bg-elevated)); }
+.venue-photo-wrap[data-theme="Other"] { background: linear-gradient(135deg, var(--theme-other), var(--bg-elevated)); }
 
 .venue-photo {
   position: absolute;
@@ -545,6 +554,9 @@ textarea:focus-visible {
 .theme-badge[data-theme="Games"] { background: var(--theme-games); }
 .theme-badge[data-theme="Adult"] { background: var(--theme-adult); color: #fff; }
 .theme-badge[data-theme="Fetish"] { background: var(--theme-fetish); color: #fff; }
+.theme-badge[data-theme="Exploration"] { background: var(--theme-exploration); color: #fff; }
+.theme-badge[data-theme="Fantasy"] { background: var(--theme-fantasy); color: #fff; }
+.theme-badge[data-theme="Other"] { background: var(--theme-other); color: #fff; }
 
 .venue-card-bottom {
   display: flex;
@@ -777,6 +789,9 @@ textarea:focus-visible {
 .venue-detail-photo-wrap[data-theme="Games"] { background: linear-gradient(135deg, var(--theme-games), var(--bg-elevated)); }
 .venue-detail-photo-wrap[data-theme="Adult"] { background: linear-gradient(135deg, var(--theme-adult), var(--bg-elevated)); }
 .venue-detail-photo-wrap[data-theme="Fetish"] { background: linear-gradient(135deg, var(--theme-fetish), var(--bg-elevated)); }
+.venue-detail-photo-wrap[data-theme="Exploration"] { background: linear-gradient(135deg, var(--theme-exploration), var(--bg-elevated)); }
+.venue-detail-photo-wrap[data-theme="Fantasy"] { background: linear-gradient(135deg, var(--theme-fantasy), var(--bg-elevated)); }
+.venue-detail-photo-wrap[data-theme="Other"] { background: linear-gradient(135deg, var(--theme-other), var(--bg-elevated)); }
 
 .venue-detail-photo {
   position: absolute;

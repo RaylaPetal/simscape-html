@@ -4,6 +4,7 @@
 const THEMES = [
   "BDSM", "Club", "Hangout", "Dating", "Roleplay",
   "DJ", "Games", "Adult", "Fetish",
+  "Exploration", "Fantasy", "Other",
 ];
 
 // Keep in sync with the venues.maturity CHECK constraint (see
